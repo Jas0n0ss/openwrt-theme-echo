@@ -53,7 +53,6 @@
     {% if (echo_preset == 'openwrt'): %}
     <div class="openwrt-login-brand echo-login-brand-center">
       <img src="{{ media }}/img/openwrt-logo.svg" alt="OpenWrt" class="openwrt-login-logo">
-      <p class="router-hostname">{{ hostname }}</p>
     </div>
     {% else %}
     <div class="echo-login-brand-center">
@@ -84,8 +83,6 @@
       </div>
     </form>
   </div>
-
-  <div class="echo-login-footer">Echo v{{ echo_version }}</div>
 </div>
 
 <script>

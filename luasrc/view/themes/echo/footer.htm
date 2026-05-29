@@ -1,7 +1,22 @@
+<%
+local distro_name = version.distname or "OpenWrt"
+if distro_name:lower():find("immortal") then
+  distro_name = "ImmortalWrt"
+elseif distro_name:lower():find("lede") then
+  distro_name = "LEDE"
+end
+local firmware_label = distro_name
+if version.distversion then
+  firmware_label = firmware_label .. " " .. version.distversion
+end
+if version.distrevision then
+  firmware_label = firmware_label .. " (" .. version.distrevision .. ")"
+end
+%>
 <% if not blank_page then %>
     </main>
     </div>
-    <footer id="echo-footer"><div class="footer-inner"><span>Echo Theme</span><span><%=version.luciname%> (<%=version.luciversion%>)</span></div></footer>
+    <footer id="echo-footer"><div class="footer-inner"><span class="footer-firmware"><%=firmware_label%></span><a class="footer-theme-link" href="https://github.com/Jas0n0ss/openwrt-theme-echo/releases/latest" target="_blank" rel="noopener noreferrer">Echo Theme · Download IPK</a></div></footer>
   </div>
 </div>
 <script>L.require('menu-echo')</script>

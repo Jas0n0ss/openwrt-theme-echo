@@ -520,7 +520,38 @@ body.has-content-tabs #content-tabs {
 #echo-footer .footer-inner {
 	display: flex;
 	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
 	gap: 8px 16px;
+}
+
+.footer-firmware {
+	color: var(--echo-text-tertiary);
+}
+
+.footer-theme-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 14px;
+	border-radius: var(--echo-radius-sm);
+	border: 1px solid var(--echo-primary);
+	background: var(--echo-primary-soft);
+	color: var(--echo-primary);
+	font-size: 12px;
+	font-weight: 600;
+	text-decoration: none;
+	transition: background var(--echo-duration) var(--echo-ease),
+		color var(--echo-duration) var(--echo-ease),
+		border-color var(--echo-duration) var(--echo-ease);
+	white-space: nowrap;
+}
+
+.footer-theme-link:hover {
+	background: var(--echo-primary);
+	border-color: var(--echo-primary);
+	color: #fff;
+	text-decoration: none;
 }
 
 @media (max-width: 960px) {

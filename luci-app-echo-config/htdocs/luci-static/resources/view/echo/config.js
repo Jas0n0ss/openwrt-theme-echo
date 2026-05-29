@@ -25,7 +25,7 @@ return view.extend({
 
 		o = s.option(form.Value, 'brand_tag', _('Brand Label'),
 			_('Text shown below hostname in the sidebar.'));
-		o.placeholder = 'Echo Router';
+		o.placeholder = 'OpenWrt Router';
 
 		o = s.option(form.Value, 'primary', _('Primary Color (Light)'),
 			_('Main accent color for light mode. Example: #0071e3'));

@@ -16,7 +16,7 @@
   let echo_primary = '#0071e3';
   let echo_dark_primary = '#0a84ff';
   let echo_gold = '#c9a962';
-  let echo_brand_tag = 'Echo Router';
+  let echo_brand_tag = '';
   let echo_bg_mode = 'gradient';
   let echo_font_size = '14';
   let echo_bg_src = null;
@@ -148,13 +148,11 @@
               {% if (echo_router_model != 'OpenWrt' && echo_router_model != ''): %}
               <span class="router-model">{{ echo_router_model }}</span>
               {% endif %}
-              <span class="router-hostname">{{ hostname }}</span>
             </div>
           </div>
           {% else %}
           <div class="echo-brand-inner">
             <span class="hostname">{{ hostname }}</span>
-            <span class="brand-tag">{{ echo_brand_tag }}</span>
           </div>
           {% endif %}
         </div>

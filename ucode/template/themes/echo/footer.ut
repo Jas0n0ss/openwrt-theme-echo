@@ -1,7 +1,22 @@
 {# luci-theme-echo — Main page footer #}
 {%
   import { readfile } from 'fs';
+
   const echo_version = trim(readfile('/usr/share/ucode/luci/template/themes/echo/version')) ?? '?';
+  const echo_theme_repo = 'https://github.com/Jas0n0ss/openwrt-theme-echo';
+  const echo_release_url = echo_theme_repo + '/releases/latest';
+
+  let distro_name = version.distname ?? 'OpenWrt';
+  if (/immortal/i.test(distro_name))
+    distro_name = 'ImmortalWrt';
+  else if (/lede/i.test(distro_name))
+    distro_name = 'LEDE';
+
+  let firmware_label = distro_name;
+  if (version.distversion)
+    firmware_label += ' ' + version.distversion;
+  if (version.distrevision)
+    firmware_label += ' (' + version.distrevision + ')';
 %}
 {% if (!blank_page): %}
     </main>
@@ -9,12 +24,10 @@
 
     <footer id="echo-footer">
       <div class="footer-inner">
-        <span>Echo v{{ echo_version }}</span>
-        <span>{{ version.luciname }} ({{ version.luciversion }})</span>
-        <span>{{ version.distname }} {{ version.distversion }} ({{ version.distrevision }})</span>
-        {% if (lua_active): %}
-        <span>{{ _('Lua compatibility mode active') }}</span>
-        {% endif %}
+        <span class="footer-firmware">{{ firmware_label }}</span>
+        <a class="footer-theme-link" href="{{ echo_release_url }}" target="_blank" rel="noopener noreferrer" title="{{ echo_theme_repo }}">
+          Echo Theme v{{ echo_version }} · {{ _('Download IPK') }}
+        </a>
       </div>
     </footer>
   </div>
