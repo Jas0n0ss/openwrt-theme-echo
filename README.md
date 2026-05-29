@@ -159,13 +159,20 @@ openwrt-theme-echo/
 
 ---
 
-## CI
+## CI 与 Release
 
-推送至 `main` / `master` 或 PR 时自动：
+推送至 `main` / `master`、打 `v*` 标签或手动触发时自动：
 
-1. `./scripts/build-ipk.sh`
-2. `./scripts/verify-ipk.sh`
-3. 上传 `dist/*.ipk` 为 Artifacts（保留 30 天）
+1. `./scripts/build-ipk.sh` 构建安装包
+2. `./scripts/verify-ipk.sh` 校验包内资源
+3. 上传 Actions Artifacts（保留 30 天）
+4. **发布到 [GitHub Releases](https://github.com/Jas0n0ss/openwrt-theme-echo/releases)**，附带两个 `.ipk`
+
+| 触发方式 | Release 标签 |
+|----------|--------------|
+| 推送到 `main` | `v{version}`（读取 `ucode/template/themes/echo/version`） |
+| 推送标签 `v1.5.11` | 使用该标签名 |
+| PR | 仅构建校验，不发布 Release |
 
 手动触发：**Actions → Build IPK → Run workflow**
 
