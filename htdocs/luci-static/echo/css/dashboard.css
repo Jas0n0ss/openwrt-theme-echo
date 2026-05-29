@@ -72,11 +72,13 @@
 }
 
 .echo-empty,
-.echo-more {
+.echo-more,
+.echo-map-empty {
 	text-align: center;
 	color: var(--echo-text-tertiary);
 	font-size: var(--echo-text-xs);
 	padding: 16px !important;
+	margin: 0;
 }
 
 .echo-overview-note {

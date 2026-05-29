@@ -68,6 +68,12 @@ msgstr "网口状态"
 msgid "WiFi Radios"
 msgstr "无线射频"
 
+msgid "No Ethernet ports detected on this device."
+msgstr "本设备未检测到以太网口。"
+
+msgid "No wireless radios on this device."
+msgstr "本设备未检测到无线射频。"
+
 msgid "WAN"
 msgstr "广域网"
 

@@ -18,7 +18,7 @@ Apple 极简美学 × OpenWrt 仪表盘 — 面向 OpenWrt / ImmortalWrt / LEDE 
 | **顶部导航** | 菜单逻辑对齐 `menu-bootstrap.js`；Echo 下拉式 L1/L2；PC / 移动端自适应 |
 | **二级菜单** | 点击主菜单展开下拉后选择 L2（主菜单不直接跳转）；有 L2 时隐藏重复标题 |
 | **经典主菜单** | 与 LuCI 一致：状态 / 系统 / 服务 / 网络 / 统计 / 插件… / 退出 |
-| **Network Map** | 概览页网口 + 无线射频卡片，中文 i18n |
+| **Network Map** | 按设备自适应：board.json / 内置网口 / 实时链路；无线读 iwinfo，无硬件则隐藏模块 |
 | **仪表盘表格** | 系统资源 / 接口 / 流量 / 客户端四表，保留 LuCI 原生详情 |
 | **第三方 UI** | `ui-echo.js` 自动美化 luci-app 注入的表格、表单、Modal、Tab |
 | **主题配置** | `luci-app-echo-config` 可视化配置预设、颜色、背景 |

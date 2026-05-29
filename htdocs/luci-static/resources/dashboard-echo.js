@@ -2,6 +2,33 @@
 'require baseclass';
 'require rpc';
 'require uci';
+'require fs';
+'require network';
+
+var callGetBuiltinEthernetPorts = rpc.declare({
+	object: 'luci',
+	method: 'getBuiltinEthernetPorts',
+	expect: { result: [] }
+});
+
+var callNetworkDeviceStatus = rpc.declare({
+	object: 'network.device',
+	method: 'status',
+	params: [ 'name' ],
+	expect: { '': {} }
+});
+
+var callNetworkDeviceStatusAll = rpc.declare({
+	object: 'network.device',
+	method: 'status',
+	expect: { '': {} }
+});
+
+var callInterfaceDump = rpc.declare({
+	object: 'network.interface',
+	method: 'dump',
+	expect: { interface: [] }
+});
 
 return baseclass.extend({
 	__init__: function() {
@@ -11,6 +38,10 @@ return baseclass.extend({
 		this._ifaceBody = null;
 		this._portsEl = null;
 		this._wifiEl = null;
+		this._portsModule = null;
+		this._wifiModule = null;
+		this._mapDivider = null;
+		this._mapPanel = null;
 
 		uci.load('echo').then(L.bind(function() {
 			this.enabled = uci.get('echo', 'global', 'dashboard') !== '0';
@@ -57,21 +88,26 @@ return baseclass.extend({
 	buildNetworkMap: function() {
 		this._portsEl = E('div', { 'class': 'echo-map-ports' });
 		this._wifiEl = E('div', { 'class': 'echo-map-wifi' });
+		this._portsModule = E('div', { 'class': 'echo-map-module echo-map-module-ports' }, [
+			E('div', { 'class': 'echo-map-module-head' }, [ _('Port Status') ]),
+			E('div', { 'class': 'echo-map-module-inner' }, [ this._portsEl ])
+		]);
+		this._mapDivider = E('div', { 'class': 'echo-map-divider', 'aria-hidden': 'true' });
+		this._wifiModule = E('div', { 'class': 'echo-map-module echo-map-module-wifi' }, [
+			E('div', { 'class': 'echo-map-module-head' }, [ _('WiFi Radios') ]),
+			E('div', { 'class': 'echo-map-module-inner' }, [ this._wifiEl ])
+		]);
 
-		return E('div', { 'class': 'cbi-section echo-panel echo-network-map echo-map-full' }, [
+		this._mapPanel = E('div', { 'class': 'cbi-section echo-panel echo-network-map echo-map-full' }, [
 			E('div', { 'class': 'cbi-section-head' }, [ _('Network Map') ]),
 			E('div', { 'class': 'echo-map-body' }, [
-				E('div', { 'class': 'echo-map-module echo-map-module-ports' }, [
-					E('div', { 'class': 'echo-map-module-head' }, [ _('Port Status') ]),
-					E('div', { 'class': 'echo-map-module-inner' }, [ this._portsEl ])
-				]),
-				E('div', { 'class': 'echo-map-divider', 'aria-hidden': 'true' }),
-				E('div', { 'class': 'echo-map-module echo-map-module-wifi' }, [
-					E('div', { 'class': 'echo-map-module-head' }, [ _('WiFi Radios') ]),
-					E('div', { 'class': 'echo-map-module-inner' }, [ this._wifiEl ])
-				])
+				this._portsModule,
+				this._mapDivider,
+				this._wifiModule
 			])
 		]);
+
+		return this._mapPanel;
 	},
 
 	buildOverview: function() {
@@ -160,15 +196,54 @@ return baseclass.extend({
 		return m + 'm';
 	},
 
-	formatSpeed: function(speed) {
-		speed = parseInt(speed, 10) || 0;
-		if (speed >= 10000) return '10G';
-		if (speed >= 5000) return '5G';
-		if (speed >= 2500) return '2.5G';
-		if (speed >= 1000) return '1G';
-		if (speed >= 100) return '100M';
-		if (speed > 0) return speed + 'M';
+	formatSpeedMbps: function(mbps) {
+		mbps = parseInt(mbps, 10);
+		if (isNaN(mbps) || mbps < 0) return '—';
+		if (mbps >= 10000) return '10G';
+		if (mbps >= 5000) return '5G';
+		if (mbps >= 2500) return '2.5G';
+		if (mbps >= 1000) return '1G';
+		if (mbps >= 100) return '100M';
+		if (mbps > 0) return mbps + 'M';
 		return '—';
+	},
+
+	isVirtualNetdev: function(name, dev) {
+		if (!name || name === 'lo') return true;
+		if (/^@(lan|wan|\d+)/.test(name)) return true;
+		if (/^(br-|docker|veth|tun|tap|wg|ppp|mv-|ifb|erspan)/.test(name)) return true;
+		if (dev && (dev.wireless || dev.type === 'bridge')) return true;
+		return false;
+	},
+
+	guessPortRole: function(device, ifaces) {
+		var lname = (device || '').toLowerCase();
+		if (lname.indexOf('wan') >= 0) return 'WAN';
+
+		var i;
+		for (i = 0; i < (ifaces || []).length; i++) {
+			var iface = ifaces[i];
+			var iname = (iface.interface || '').toLowerCase();
+			var idev = (iface.device || iface.l3_device || '').toLowerCase();
+			if (idev === lname && iname.indexOf('wan') >= 0) return 'WAN';
+		}
+
+		return 'LAN';
+	},
+
+	updateNetworkMapLayout: function(portCount, wifiCount) {
+		if (this._portsModule)
+			this._portsModule.hidden = portCount === 0;
+		if (this._wifiModule)
+			this._wifiModule.hidden = wifiCount === 0;
+		if (this._mapDivider)
+			this._mapDivider.hidden = !(portCount > 0 && wifiCount > 0);
+		if (this._mapPanel)
+			this._mapPanel.hidden = portCount === 0 && wifiCount === 0;
+	},
+
+	mapEmptyNote: function(msg) {
+		return E('p', { 'class': 'echo-map-empty' }, [ msg ]);
 	},
 
 	wifiGeneration: function(hwmode, band) {
@@ -383,50 +458,246 @@ return baseclass.extend({
 		if (!this._portsEl) return Promise.resolve();
 
 		return Promise.all([
-			rpc.declare({ object: 'network.interface', method: 'dump', expect: { interface: [] }})(),
-			rpc.declare({ object: 'network.device', method: 'status', expect: {}})().catch(function() { return {}; }),
-			uci.load('wireless').catch(function() { return null; })
+			this.loadEthernetPorts(),
+			this.loadWifiRadios()
 		]).then(function(res) {
-			var ifaces = res[0] || [];
-			var devices = res[1] || {};
-
-			self.renderPorts(devices, ifaces);
-			self.renderWifiRadios();
-		}).catch(function() {});
+			self.renderPorts(res[0]);
+			self.renderWifiRadios(res[1]);
+			self.updateNetworkMapLayout(res[0].length, res[1].length);
+		}).catch(function() {
+			self.renderPorts([]);
+			self.renderWifiRadios([]);
+			self.updateNetworkMapLayout(0, 0);
+		});
 	},
 
-	renderPorts: function(devices, ifaces) {
+	loadEthernetPorts: function() {
 		var self = this;
-		this._portsEl.innerHTML = '';
-		var ports = [];
-		var devNames = Object.keys(devices || {});
 
-		devNames.sort().forEach(function(name) {
-			var dev = devices[name];
-			if (!dev || dev.type === 'bridge') return;
-			var up = dev.up === true || dev.link === true;
-			var speed = self.formatSpeed(dev.speed || dev.carrier || 0);
-			var role = 'LAN';
-			var lname = name.toLowerCase();
-			if (lname.indexOf('wan') >= 0 || lname.indexOf('eth0') === 0) role = 'WAN';
+		return Promise.all([
+			L.resolveDefault(callGetBuiltinEthernetPorts(), []),
+			L.resolveDefault(fs.read('/etc/board.json'), '{}'),
+			L.resolveDefault(callInterfaceDump(), []),
+			L.resolveDefault(callNetworkDeviceStatusAll(), {}),
+			uci.load('network').catch(function() { return null; })
+		]).then(function(res) {
+			var builtin = res[0] || [];
+			var board = {};
+			var ifaces = res[2] || [];
+			var devStatus = res[3] || {};
 
-			for (var i = 0; i < ifaces.length; i++) {
-				var iname = (ifaces[i].interface || '').toLowerCase();
-				var idev = (ifaces[i].device || ifaces[i].l3_device || '').toLowerCase();
-				if (idev === lname && iname.indexOf('wan') >= 0) role = 'WAN';
+			try {
+				board = JSON.parse(res[1] || '{}');
+			} catch (e) {
+				board = {};
 			}
 
-			ports.push({ name: name, role: role, up: up, speed: speed });
-		});
+			var entries = [];
+			var seen = {};
 
-		if (ports.length === 0) {
-			ports = [
-				{ name: 'WAN', role: 'WAN', up: true, speed: '2.5G' },
-				{ name: 'LAN1', role: 'LAN', up: true, speed: '1G' },
-				{ name: 'LAN2', role: 'LAN', up: true, speed: '1G' },
-				{ name: 'LAN3', role: 'LAN', up: false, speed: '1G' },
-				{ name: 'LAN4', role: 'LAN', up: true, speed: '2.5G' }
-			];
+			function pushEntry(device, role, label) {
+				if (!device || seen[device]) return;
+				seen[device] = true;
+				entries.push({
+					device: device,
+					name: label || device,
+					role: (role || 'lan').toUpperCase()
+				});
+			}
+
+			builtin.forEach(function(p) {
+				pushEntry(p.device, p.role, p.device);
+			});
+
+			if (entries.length === 0 && board.network) {
+				[ 'lan', 'wan' ].forEach(function(role) {
+					var block = board.network[role];
+					if (!block) return;
+					if (Array.isArray(block.ports))
+						block.ports.forEach(function(dev) { pushEntry(dev, role); });
+					else if (block.device)
+						pushEntry(block.device, role);
+				});
+			}
+
+			if (entries.length === 0) {
+				Object.keys(devStatus).sort().forEach(function(name) {
+					var d = devStatus[name];
+					if (self.isVirtualNetdev(name, d)) return;
+					pushEntry(name, self.guessPortRole(name, ifaces), name);
+				});
+			}
+
+			return Promise.all(entries.map(function(entry) {
+				return L.resolveDefault(callNetworkDeviceStatus(entry.device), {}).then(function(st) {
+					var up = false;
+					var speedMbps = -1;
+
+					try {
+						var nd = network.instantiateDevice(entry.device);
+						up = nd.getCarrier();
+						speedMbps = nd.getSpeed();
+					} catch (e) {
+						up = !!(st && (st.up || st.link || st.carrier));
+						speedMbps = st && st.speed ? st.speed : -1;
+					}
+
+					if (entry.role === 'LAN' || entry.role === 'UNKNOWN')
+						entry.role = self.guessPortRole(entry.device, ifaces);
+
+					return {
+						name: entry.name,
+						role: entry.role,
+						up: up,
+						speed: self.formatSpeedMbps(speedMbps)
+					};
+				});
+			})).then(function(ports) {
+				ports.sort(function(a, b) {
+					if (a.role !== b.role)
+						return a.role === 'WAN' ? -1 : (b.role === 'WAN' ? 1 : 0);
+					return L.naturalCompare(a.name, b.name);
+				});
+				return ports;
+			});
+		});
+	},
+
+	loadWifiRadios: function() {
+		var self = this;
+
+		if (L.hasSystemFeature && !L.hasSystemFeature('wifi'))
+			return Promise.resolve([]);
+
+		return Promise.all([
+			L.resolveDefault(network.getWifiDevices(), []),
+			L.resolveDefault(network.getWifiNetworks(), []),
+			uci.load('wireless').catch(function() { return null; })
+		]).then(function(res) {
+			var radios = res[0] || [];
+			var networks = res[1] || [];
+
+			if (radios.length === 0)
+				return self.loadWifiRadiosFromUci();
+
+			var tasks = networks.map(function(net) {
+				return L.resolveDefault(net.getAssocList(), []).then(function(list) {
+					net._echoAssoc = list.length;
+					return net;
+				});
+			});
+
+			return Promise.all(tasks).then(function() {
+				var out = [];
+
+				radios.sort(function(a, b) {
+					return L.naturalCompare(a.getName(), b.getName());
+				}).forEach(function(radio) {
+					var nets = networks.filter(function(n) {
+						return n.getWifiDeviceName() === radio.getName();
+					});
+					var ssid = '—';
+					var enabled = 0;
+					var clients = 0;
+					var band = '';
+					var hwmode = '';
+
+					try {
+						var sid = radio.getName();
+						band = uci.get('wireless', sid, 'band') || '';
+						hwmode = uci.get('wireless', sid, 'hwmode') || '';
+					} catch (e) {}
+
+					nets.forEach(function(net) {
+						if (net.isDisabled()) return;
+						enabled++;
+						var active = net.getActiveSSID();
+						if (active) ssid = active;
+						clients += net._echoAssoc || 0;
+					});
+
+					if (ssid === '—' && enabled > 0) {
+						try {
+							var wifaces = uci.sections('wireless', 'wifi-iface') || [];
+							for (var i = 0; i < wifaces.length; i++) {
+								if (wifaces[i].device === radio.getName() &&
+								    uci.get('wireless', wifaces[i]['.name'], 'disabled') !== '1') {
+									ssid = uci.get('wireless', wifaces[i]['.name'], 'ssid') || ssid;
+									break;
+								}
+							}
+						} catch (e2) {}
+					}
+
+					var bandKey = (band || '').toLowerCase();
+					if (!bandKey && radio.getFrequency)
+						bandKey = String(radio.getFrequency() || '').indexOf('6') === 0 ? '6g' : '';
+
+					out.push({
+						label: self.bandLabel(bandKey),
+						gen: self.wifiGeneration(hwmode, bandKey),
+						ssid: ssid,
+						up: radio.isUp() && enabled > 0,
+						meta: clients > 0
+							? clients + ' ' + _('Clients')
+							: enabled + ' ' + _('SSID'),
+						wifi7: hwmode === 'be' || bandKey === '6g'
+					});
+				});
+
+				return out;
+			});
+		}).catch(function() {
+			return self.loadWifiRadiosFromUci();
+		});
+	},
+
+	loadWifiRadiosFromUci: function() {
+		var self = this;
+		var radios = [];
+
+		try {
+			var devs = uci.sections('wireless', 'wifi-device') || [];
+			var i;
+
+			for (i = 0; i < devs.length; i++) {
+				var sname = devs[i]['.name'];
+				var band = uci.get('wireless', sname, 'band') || uci.get('wireless', sname, 'hwmode') || '';
+				var hwmode = uci.get('wireless', sname, 'hwmode') || '';
+				var disabled = uci.get('wireless', sname, 'disabled') === '1';
+				var wifaces = uci.sections('wireless', 'wifi-iface') || [];
+				var ssid = '—';
+				var enabledIfaces = 0;
+				var j;
+
+				for (j = 0; j < wifaces.length; j++) {
+					if (wifaces[j].device !== sname) continue;
+					ssid = uci.get('wireless', wifaces[j]['.name'], 'ssid') || ssid;
+					if (uci.get('wireless', wifaces[j]['.name'], 'disabled') !== '1')
+						enabledIfaces++;
+				}
+
+				radios.push({
+					label: self.bandLabel(band),
+					gen: self.wifiGeneration(hwmode, band),
+					ssid: ssid,
+					up: !disabled && enabledIfaces > 0,
+					meta: enabledIfaces + ' ' + _('SSID'),
+					wifi7: hwmode === 'be' || (band || '').toLowerCase() === '6g'
+				});
+			}
+		} catch (e) {}
+
+		return Promise.resolve(radios);
+	},
+
+	renderPorts: function(ports) {
+		var self = this;
+		this._portsEl.innerHTML = '';
+
+		if (!ports || ports.length === 0) {
+			this._portsEl.appendChild(this.mapEmptyNote(_('No Ethernet ports detected on this device.')));
+			return;
 		}
 
 		ports.forEach(function(p) {
@@ -445,47 +716,13 @@ return baseclass.extend({
 		});
 	},
 
-	renderWifiRadios: function() {
+	renderWifiRadios: function(radios) {
 		var self = this;
 		this._wifiEl.innerHTML = '';
-		var radios = [];
 
-		try {
-			var devs = uci.sections('wireless', 'wifi-device') || [];
-			for (var i = 0; i < devs.length; i++) {
-				var sname = devs[i]['.name'];
-				var band = uci.get('wireless', sname, 'band') || uci.get('wireless', sname, 'hwmode') || '';
-				var hwmode = uci.get('wireless', sname, 'hwmode') || '';
-				var disabled = uci.get('wireless', sname, 'disabled') === '1';
-				var wifaces = uci.sections('wireless', 'wifi-iface') || [];
-				var ssid = '—';
-				var enabledIfaces = 0;
-
-				for (var j = 0; j < wifaces.length; j++) {
-					if (wifaces[j].device === sname) {
-						ssid = uci.get('wireless', wifaces[j]['.name'], 'ssid') || ssid;
-						if (uci.get('wireless', wifaces[j]['.name'], 'disabled') !== '1')
-							enabledIfaces++;
-					}
-				}
-
-				radios.push({
-					label: self.bandLabel(band),
-					gen: self.wifiGeneration(hwmode, band),
-					ssid: ssid,
-					up: !disabled && enabledIfaces > 0,
-					meta: enabledIfaces + ' ' + _('SSID'),
-					wifi7: hwmode === 'be' || (band || '').toLowerCase() === '6g'
-				});
-			}
-		} catch (e) {}
-
-		if (radios.length === 0) {
-			radios = [
-				{ label: _('2.4 GHz'), gen: _('Wi-Fi 4'), ssid: 'OpenWrt', up: true, meta: '1 ' + _('SSID'), wifi7: false },
-				{ label: _('5 GHz'), gen: _('Wi-Fi 6'), ssid: 'OpenWrt-5G', up: true, meta: '1 ' + _('SSID'), wifi7: false },
-				{ label: _('6 GHz'), gen: _('Wi-Fi 7'), ssid: 'OpenWrt-6G', up: true, meta: '1 ' + _('SSID'), wifi7: true }
-			];
+		if (!radios || radios.length === 0) {
+			this._wifiEl.appendChild(this.mapEmptyNote(_('No wireless radios on this device.')));
+			return;
 		}
 
 		radios.forEach(function(r) {
