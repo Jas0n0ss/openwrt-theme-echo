@@ -9,16 +9,21 @@ TMP="$OUT/verify-tmp"
 
 fail() { echo "VERIFY FAIL: $*" >&2; exit 1; }
 
+extract_ipk() {
+	local ipk="$1"
+	local dest="$2"
+
+	rm -rf "$dest"
+	mkdir -p "$dest"
+	python3 "$ROOT/scripts/write-ar.py" --extract "$ipk" "$dest"
+}
+
 check_ipk() {
 	local ipk="$1"
-	local name rootfs
-	name="$(basename "$ipk" .ipk)"
-	rootfs="${ipk%.ipk}.rootfs.tar.gz"
-	rm -rf "$TMP"
-	mkdir -p "$TMP"
+	local name
 
-	[[ -f "$rootfs" ]] || fail "missing rootfs tarball for $ipk"
-	tar -xzf "$rootfs" -C "$TMP"
+	name="$(basename "$ipk" .ipk)"
+	extract_ipk "$ipk" "$TMP"
 
 	case "$name" in
 		luci-theme-echo_*)

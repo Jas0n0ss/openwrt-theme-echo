@@ -6,7 +6,9 @@ Apple 极简美学 × OpenWrt 仪表盘 — 面向 OpenWrt / ImmortalWrt / LEDE 
 
 ![Echo Theme Preview](docs/preview.svg)
 
-**当前版本：** 1.5.12（见 [`ucode/template/themes/echo/version`](ucode/template/themes/echo/version)）
+**当前版本：** 1.5.13（见 [`ucode/template/themes/echo/version`](ucode/template/themes/echo/version)）
+
+**下载安装包（仅 .ipk，无源码压缩包）：** https://jas0n0ss.github.io/openwrt-theme-echo/
 
 ---
 
@@ -64,7 +66,11 @@ cd openwrt-theme-echo
 
 ### 方式 A：预编译 .ipk（推荐）
 
-从 [GitHub Actions Artifacts](https://github.com/Jas0n0ss/openwrt-theme-echo/actions) 下载最新构建，或本地构建：
+从 **GitHub Pages 下载页** 获取最新 `.ipk`（仅安装包，不含源码 zip/tar）：
+
+**https://jas0n0ss.github.io/openwrt-theme-echo/**
+
+或本地构建：
 
 ```bash
 ./scripts/build-ipk.sh
@@ -183,22 +189,25 @@ openwrt-theme-echo/
 
 ---
 
-## CI 与 Release
+## CI 与下载发布
 
-推送至 `main` / `master`、打 `v*` 标签或手动触发时自动：
+推送至 `main` / `master` 或手动触发时自动：
 
 1. `./scripts/build-ipk.sh` 构建安装包
 2. `./scripts/verify-ipk.sh` 校验包内资源
-3. 上传 Actions Artifacts（保留 30 天）
-4. **发布到 [GitHub Releases](https://github.com/Jas0n0ss/openwrt-theme-echo/releases)**，附带两个 `.ipk`
+3. 上传 Actions Artifacts（仅 `.ipk`）
+4. **发布到 GitHub Pages** — 仅 `.ipk` 直链，**不含** GitHub Release 自带的 Source code 压缩包
 
-| 触发方式 | Release 标签 |
-|----------|--------------|
-| 推送到 `main` | `v{version}`（读取 `ucode/template/themes/echo/version`） |
-| 推送标签 `v1.5.11` | 使用该标签名 |
-| PR | 仅构建校验，不发布 Release |
+| 触发方式 | 产物 |
+|----------|------|
+| 推送到 `main` | Pages: `/latest/*.ipk` 与 `/v{version}/*.ipk` |
+| PR | 仅构建校验 + Artifacts，不发布 Pages |
+
+下载页：**https://jas0n0ss.github.io/openwrt-theme-echo/**
 
 手动触发：**Actions → Build IPK → Run workflow**
+
+> 首次启用 Pages：仓库 **Settings → Pages → Build and deployment → GitHub Actions**
 
 ---
 

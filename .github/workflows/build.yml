@@ -3,7 +3,6 @@ name: Build IPK
 on:
   push:
     branches: [main, master]
-    tags: ['v*']
   pull_request:
     branches: [main, master]
   workflow_dispatch:
@@ -14,6 +13,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.ver.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,36 +35,54 @@ jobs:
       - name: Upload workflow artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: luci-echo-ipk-${{ github.sha }}
+          name: ipk-packages
           path: dist/*.ipk
           retention-days: 30
 
-      - name: Publish GitHub Release
-        if: github.event_name != 'pull_request'
-        uses: softprops/action-gh-release@v2
+  publish:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download built IPK packages
+        uses: actions/download-artifact@v4
         with:
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || format('v{0}', steps.ver.outputs.version) }}
-          name: Echo Theme ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || format('v{0}', steps.ver.outputs.version) }}
-          target_commitish: ${{ github.sha }}
-          generate_release_notes: true
-          make_latest: true
-          overwrite_files: true
-          files: |
-            dist/luci-theme-echo_*.ipk
-            dist/luci-app-echo-config_*.ipk
-          body: |
-            ## 安装
+          name: ipk-packages
+          path: dist
 
-            上传到路由器后执行：
+      - name: Prepare download site (IPK only)
+        run: |
+          VERSION="${{ needs.build.outputs.version }}"
+          mkdir -p site/v"${VERSION}" site/latest
+          cp dist/*.ipk site/v"${VERSION}"/
+          cp dist/*.ipk site/latest/
+          echo "${VERSION}" > site/latest/VERSION.txt
+          THEME=$(basename dist/luci-theme-echo_*.ipk)
+          CONFIG=$(basename dist/luci-app-echo-config_*.ipk)
+          cat > site/index.html <<HTML
+          <!DOCTYPE html>
+          <html lang="zh-Hans"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+          <title>Echo Theme Downloads</title></head><body>
+          <h1>Echo Theme IPK Downloads</h1>
+          <p>Version <strong>v${VERSION}</strong> — 仅包含 .ipk 安装包，无源码压缩包。</p>
+          <h2>Latest</h2>
+          <ul>
+            <li><a href="latest/${THEME}">${THEME}</a></li>
+            <li><a href="latest/${CONFIG}">${CONFIG}</a></li>
+          </ul>
+          <h2>v${VERSION}</h2>
+          <ul>
+            <li><a href="v${VERSION}/${THEME}">${THEME}</a></li>
+            <li><a href="v${VERSION}/${CONFIG}">${CONFIG}</a></li>
+          </ul>
+          </body></html>
+          HTML
+          touch site/.nojekyll
 
-            ```sh
-            opkg install luci-theme-echo_*.ipk
-            opkg install luci-app-echo-config_*.ipk
-            uci set luci.main.mediaurlbase='/luci-static/echo'
-            uci commit luci
-            /etc/init.d/uhttpd restart
-            ```
-
-            然后在 **System → Language and Style → Design** 中选择 **Echo**。
-
-            Built from commit ${{ github.sha }}.
+      - name: Publish to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: site
+          keep_files: true
+          commit_message: "downloads: v${{ needs.build.outputs.version }}"

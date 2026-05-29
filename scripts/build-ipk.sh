@@ -93,9 +93,6 @@ EOF
 		"$control_dir/control.tar.gz" \
 		"$control_dir/data.tar.gz"
 
-	# Also ship rootfs tarball for manual install / testing
-	tar -C "$data_root" -czf "${ipk%.ipk}.rootfs.tar.gz" .
-
 	echo "Built: $ipk ($(du -h "$ipk" | cut -f1))"
 }
 
