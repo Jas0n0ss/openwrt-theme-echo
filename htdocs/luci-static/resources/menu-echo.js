@@ -1,7 +1,12 @@
 'use strict';
 'require baseclass';
 'require ui';
+'require menu-bootstrap-core as EchoMenu';
 
+/*
+ * Echo navigation — DOM/skin is custom; menu rules follow menu-bootstrap.js
+ * (mode menu → sub menu → tab menu). See menu-bootstrap-core.js.
+ */
 return baseclass.extend({
 	__init__: function() {
 		this._overflowBound = false;
@@ -119,106 +124,8 @@ return baseclass.extend({
 		});
 	},
 
-	_isGeneralMenu: function(name, title) {
-		var s = ((name || '') + ' ' + (title || '')).toLowerCase();
-		if (document.body.classList.contains('theme-openwrt'))
-			return s.indexOf('status') >= 0 || s.indexOf('network') >= 0;
-		return s.indexOf('status') >= 0;
-	},
-
-	_isSystemTopMenu: function(node) {
-		var n = (node.name || '').toLowerCase();
-		var systemNames = ['status', 'network', 'system', 'services', 'firewall', 'admin', 'opkg'];
-		if (systemNames.indexOf(n) >= 0) return true;
-		if (this._isVpnMenu(node)) return false;
-		return false;
-	},
-
-	_isVpnMenu: function(node) {
-		var s = ((node.name || '') + ' ' + (node.title || '')).toLowerCase();
-		var keys = [
-			'vpn', 'passwall', 'openclash', 'homeproxy', 'home-proxy', 'shadowsocks',
-			'ssr', 'ssr-plus', 'v2ray', 'xray', 'wireguard', 'openvpn', 'zerotier',
-			'ipsec', 'pptp', 'l2tp', 'clash', 'sing-box', 'singbox', 'neko', 'helloworld',
-			'frpc', 'frps', 'trojan', 'tuic', 'hysteria', 'brook', 'gost', 'openconnect',
-			'strongswan', 'n2n', 'tailscale', 'headscale', 'udp2raw', 'kcptun', 'turboacc',
-			'proxy', 'bypass', 'subconverter', 'naive', 'snell', 'outline'
-		];
-		var i;
-
-		for (i = 0; i < keys.length; i++) {
-			if (s.indexOf(keys[i]) >= 0) return true;
-		}
-
-		var ik = this._iconKey(node.name);
-		return ik === 'vpn' || ik === 'proxy';
-	},
-
-	_sortMenuEntries: function(topChildren) {
-		var self = this;
-		var general = [], advanced = [];
-
-		topChildren.forEach(function(entry, index) {
-			var node = entry.node || entry;
-			var idx = entry.index != null ? entry.index : index;
-			var item = { node: node, index: idx, virtual: false };
-			if (self._isGeneralMenu(node.name, node.title))
-				general.push(item);
-			else
-				advanced.push(item);
-		});
-
-		return general.concat(advanced);
-	},
-
 	_buildTopEntries: function(topChildren) {
-		var self = this;
-		var system = [], vpn = [], apps = [];
-
-		topChildren.forEach(function(node, index) {
-			var entry = { node: node, index: index, virtual: false };
-			if (self._isSystemTopMenu(node))
-				system.push(entry);
-			else if (self._isVpnMenu(node))
-				vpn.push(entry);
-			else
-				apps.push(entry);
-		});
-
-		var result = this._sortMenuEntries(system);
-
-		if (vpn.length > 0) {
-			result.push({
-				virtual: true,
-				name: '_echo_vpn',
-				title: _('VPN'),
-				iconName: 'vpn',
-				members: vpn
-			});
-		}
-
-		if (apps.length > 0) {
-			result.push({
-				virtual: true,
-				name: '_echo_apps',
-				title: _('Software'),
-				iconName: 'software',
-				members: apps
-			});
-		}
-
-		return result;
-	},
-
-	_isVirtualActive: function(entry) {
-		var cur = L.env.dispatchpath[0];
-		var i;
-
-		for (i = 0; i < entry.members.length; i++) {
-			if (entry.members[i].node.name === cur)
-				return true;
-		}
-		return false;
+		return EchoMenu.sortTopChildren(topChildren);
 	},
 
 	render: function(tree) {
@@ -230,11 +137,6 @@ return baseclass.extend({
 		var moreMenu = document.getElementById('top-nav-more-menu');
 		if (moreMenu) moreMenu.innerHTML = '';
 
-		var subNav = document.getElementById('sub-nav');
-		if (subNav) {
-			subNav.innerHTML = '';
-			subNav.classList.remove('active');
-		}
 		document.body.classList.remove('has-sub-nav');
 
 		var contentTabs = document.getElementById('content-tabs');
@@ -259,11 +161,22 @@ return baseclass.extend({
 				activeEntry = entry;
 		});
 
-		if (activeEntry)
-			this._renderSubNav(activeEntry);
+		topNav.appendChild(this.renderLogoutItem());
 
+		document.querySelectorAll('#echo-nav-bar .nav-section.has-dropdown .nav-dropdown').forEach(function(panel) {
+			panel.setAttribute('hidden', '');
+			panel.setAttribute('aria-hidden', 'true');
+		});
+
+		if (activeEntry && this._getSubItems(activeEntry).length > 0)
+			document.body.classList.add('has-sub-nav');
+		else
+			document.body.classList.remove('has-sub-nav');
+
+		this._closeAllDropdowns();
+		this._bindDropdowns();
 		this._renderTitle(tree);
-		this._renderContentTabs(tree, activeEntry);
+		this._renderContentTabs(tree);
 		document.body.dataset.page = L.env.requestpath.join('-') || 'home';
 
 		this._syncNavCenter();
@@ -278,92 +191,167 @@ return baseclass.extend({
 		}
 	},
 
-	_isTopActiveNode: function(topNode, index) {
-		return L.env.requestpath.length
-			? topNode.name === L.env.dispatchpath[0]
-			: index === 0;
+	_getSubItems: function(entry) {
+		var self = this;
+		var items = [];
+
+		if (!entry || !entry.node) return items;
+
+		var l2Children = ui.menu.getChildren(entry.node);
+		if (l2Children.length === 0) return items;
+
+		l2Children.forEach(function(l2) {
+			items.push(self._makeL2Item(l2, entry.node));
+		});
+
+		return items;
 	},
 
-	_firstLeafUrl: function(parts, node) {
-		var children = ui.menu.getChildren(node);
-		if (children.length === 0)
-			return L.url.apply(L, parts);
-		return this._firstLeafUrl(parts.concat([children[0].name]), children[0]);
+	_makeL2Item: function(l2, topNode) {
+		return {
+			node: l2,
+			active: L.env.dispatchpath[1] === l2.name,
+			url: EchoMenu.l2ItemHref(topNode, l2)
+		};
 	},
 
-	renderTopItem: function(entry) {
-		var isTopActive, topUrl, topNode, label, iconName;
-
-		if (entry.virtual) {
-			isTopActive = this._isVirtualActive(entry);
-			topUrl = this._firstLeafUrl([entry.members[0].node.name], entry.members[0].node);
-			label = entry.title;
-			iconName = entry.iconName;
-		} else {
-			topNode = entry.node;
-			isTopActive = this._isTopActiveNode(topNode, entry.index);
-			topUrl = this._firstLeafUrl([topNode.name], topNode);
-			label = topNode.title;
-			iconName = topNode.name;
-		}
-
-		return E('div', {
-			'class': 'nav-section' + (isTopActive ? ' is-active' : ''),
-			'data-nav-item': '1'
-		}, [
-			E('a', {
-				'class': 'nav-top' + (isTopActive ? ' active' : '') + (topNode && topNode.readonly ? ' readonly' : ''),
-				'href': topUrl,
-				'data-name': entry.virtual ? entry.name : topNode.name,
-				'title': _(label)
+	_navCaret: function() {
+		return E('span', { 'class': 'nav-caret', 'aria-hidden': 'true' }, [
+			E('svg', {
+				'viewBox': '0 0 24 24',
+				'fill': 'none',
+				'stroke': 'currentColor',
+				'stroke-width': '2',
+				'width': '12',
+				'height': '12'
 			}, [
-				this.getIcon(iconName, label),
-				E('span', { 'class': 'nav-label' }, [ _(label) ])
+				E('path', { 'd': 'M6 9l6 6 6-6' })
 			])
 		]);
 	},
 
-	_renderSubNav: function(activeEntry) {
-		var subNav = document.getElementById('sub-nav');
-		if (!subNav) return;
+	renderTopItem: function(entry) {
+		var topNode = entry.node;
+		var isTopActive = EchoMenu.isModeActive(topNode, entry.index);
+		var label = topNode.title;
+		var iconName = topNode.name;
+		var subItems = this._getSubItems(entry);
+		var topHref = EchoMenu.topLevelHref(topNode);
+		var sectionChildren;
 
-		var self = this;
-		var items = [];
+		sectionChildren = [
+			E('a', {
+				'class': 'nav-top' +
+					(isTopActive ? ' active' : '') +
+					(subItems.length > 0 ? ' nav-top-trigger' : '') +
+					(topNode.readonly ? ' readonly' : ''),
+				'href': topHref,
+				'data-name': topNode.name,
+				'title': _(label),
+				'aria-haspopup': subItems.length ? 'true' : null,
+				'aria-expanded': 'false'
+			}, [
+				this.getIcon(iconName, label),
+				E('span', { 'class': 'nav-label' }, [ _(label) ]),
+				subItems.length ? this._navCaret() : ''
+			])
+		];
 
-		if (activeEntry.virtual) {
-			if (activeEntry.members.length <= 1) return;
-			activeEntry.members.forEach(function(m) {
-				items.push({ node: m.node, active: L.env.dispatchpath[0] === m.node.name });
-			});
-		} else {
-			var l2Children = ui.menu.getChildren(activeEntry.node);
-			if (l2Children.length <= 1) return;
-			l2Children.forEach(function(l2) {
-				items.push({ node: l2, active: L.env.dispatchpath[1] === l2.name });
-			});
+		if (subItems.length > 0) {
+			sectionChildren.push(E('div', {
+				'class': 'nav-dropdown',
+				'hidden': '',
+				'aria-hidden': 'true'
+			},
+				subItems.map(L.bind(function(item) {
+					return E('a', {
+						'class': 'nav-dropdown-item' + (item.active ? ' active' : '') +
+							(item.node.readonly ? ' readonly' : ''),
+						'href': item.url
+					}, [ E('span', { 'class': 'nav-label' }, [ _(item.node.title) ]) ]);
+				}, this))
+			));
 		}
 
-		items.forEach(function(item) {
-			var l2 = item.node;
-			var l3Children = ui.menu.getChildren(l2);
-			var l2Url;
+		return E('div', {
+			'class': 'nav-section' +
+				(isTopActive ? ' is-active' : '') +
+				(subItems.length > 0 ? ' has-dropdown' : ''),
+			'data-nav-item': '1'
+		}, sectionChildren);
+	},
 
-			if (activeEntry.virtual) {
-				l2Url = self._firstLeafUrl([l2.name], l2);
-			} else {
-				l2Url = l3Children.length
-					? self._firstLeafUrl([activeEntry.node.name, l2.name], l2)
-					: L.url(activeEntry.node.name, l2.name);
+	renderLogoutItem: function() {
+		return E('div', { 'class': 'nav-section nav-logout' }, [
+			E('a', {
+				'class': 'nav-top nav-logout-link',
+				'href': L.url('logout'),
+				'title': _('Logout')
+			}, [
+				E('span', { 'class': 'nav-label' }, [ _('Logout') ])
+			])
+		]);
+	},
+
+	_bindDropdowns: function() {
+		var navBar = document.getElementById('echo-nav-bar');
+		if (!navBar || this._dropdownBound) return;
+
+		var self = this;
+		this._dropdownBound = true;
+
+		navBar.addEventListener('click', function(e) {
+			var section = e.target.closest('.nav-section.has-dropdown');
+			if (!section) return;
+
+			if (e.target.closest('.nav-dropdown-item'))
+				return;
+
+			var btn = section.querySelector('.nav-top');
+			if (!btn || e.target.closest('.nav-top') !== btn)
+				return;
+
+			e.preventDefault();
+			e.stopPropagation();
+
+			var open = !section.classList.contains('open');
+			self._closeAllDropdowns();
+
+			if (open) {
+				section.classList.add('open');
+				btn.setAttribute('aria-expanded', 'true');
+				self._setDropdownOpen(section, true);
 			}
-
-			subNav.appendChild(E('a', {
-				'class': 'sub-nav-item' + (item.active ? ' active' : '') + (l2.readonly ? ' readonly' : ''),
-				'href': l2Url
-			}, [ E('span', { 'class': 'nav-label' }, [ _(l2.title) ]) ]));
 		});
 
-		subNav.classList.add('active');
-		document.body.classList.add('has-sub-nav');
+		document.addEventListener('click', function(e) {
+			if (e.target.closest('.nav-section.has-dropdown > .nav-top'))
+				return;
+			self._closeAllDropdowns();
+		});
+	},
+
+	_setDropdownOpen: function(section, open) {
+		var panel = section && section.querySelector('.nav-dropdown');
+		if (!panel) return;
+
+		if (open) {
+			panel.removeAttribute('hidden');
+			panel.setAttribute('aria-hidden', 'false');
+		} else {
+			panel.setAttribute('hidden', '');
+			panel.setAttribute('aria-hidden', 'true');
+		}
+	},
+
+	_closeAllDropdowns: function() {
+		var self = this;
+		document.querySelectorAll('.nav-section.has-dropdown').forEach(function(s) {
+			s.classList.remove('open');
+			var b = s.querySelector('.nav-top');
+			if (b) b.setAttribute('aria-expanded', 'false');
+			self._setDropdownOpen(s, false);
+		});
 	},
 
 	_syncNavCenter: function() {
@@ -456,40 +444,17 @@ return baseclass.extend({
 			crumbEl.textContent = parts.length > 1 ? parts.slice(0, -1).join(' › ') : '';
 	},
 
-	_renderContentTabs: function(tree, activeEntry) {
-		if (activeEntry && activeEntry.virtual) {
-			var pluginName = L.env.dispatchpath[0];
-			var memberNode = null;
-			var i;
+	_renderContentTabs: function(tree) {
+		if (!EchoMenu.shouldRenderContentTabs()) return;
 
-			for (i = 0; i < activeEntry.members.length; i++) {
-				if (activeEntry.members[i].node.name === pluginName) {
-					memberNode = activeEntry.members[i].node;
-					break;
-				}
-			}
-
-			if (!memberNode || L.env.dispatchpath.length < 2) return;
-			this.renderTabMenu(memberNode, pluginName, 0, 1);
-			return;
-		}
-
-		if (L.env.dispatchpath.length < 3) return;
-
-		var node = tree;
-		var url = '';
-		var i;
-
-		for (i = 0; i < 3 && node; i++) {
-			node = node.children[L.env.dispatchpath[i]];
-			url += (url ? '/' : '') + L.env.dispatchpath[i];
-		}
-
-		if (node) this.renderTabMenu(node, url, 0, 3);
+		var root = EchoMenu.resolveTabRoot(tree);
+		if (root) this.renderTabMenu(root.node, root.url, 0, 3);
 	},
 
+	/* Same depth/path rules as menu-bootstrap.js renderTabMenu */
 	renderTabMenu: function(tree, url, level, basePathIdx) {
 		var container = document.getElementById('content-tabs');
+		var tabHook = document.getElementById('tabmenu');
 		if (!container || container.dataset.echoAppTabs) return;
 
 		var children = ui.menu.getChildren(tree);
@@ -500,15 +465,24 @@ return baseclass.extend({
 
 		children.forEach(function(child) {
 			var isActive = L.env.dispatchpath[pathIdx] === child.name;
+			var className = 'content-tab tabmenu-item-' + child.name + (isActive ? ' active' : '');
+
 			container.appendChild(E('a', {
-				'class': 'content-tab' + (isActive ? ' active' : ''),
+				'class': className,
 				'href': L.url(url, child.name)
 			}, [ _(child.title) ]));
+
 			if (isActive) activeNode = child;
 		});
 
 		container.classList.add('active');
+		container.style.display = '';
 		document.body.classList.add('has-content-tabs');
+
+		if (tabHook) {
+			tabHook.innerHTML = '';
+			tabHook.style.display = 'none';
+		}
 
 		if (activeNode)
 			this.renderTabMenu(activeNode, url + '/' + activeNode.name, (level || 0) + 1, basePathIdx);

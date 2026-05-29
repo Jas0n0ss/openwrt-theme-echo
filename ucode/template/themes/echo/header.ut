@@ -63,6 +63,8 @@
   <title>{{ hostname }}{{ node?.title ? ` - ${striptags(node.title)}` : '' }} - LuCI</title>
   <link rel="icon" href="{{ media }}/img/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="{{ media }}/img/favicon.svg">
+  {# LuCI bootstrap cascade — CBI/forms/widgets base; Echo CSS overrides chrome #}
+  <link rel="stylesheet" href="/luci-static/bootstrap/cascade.css" data-echo-base="bootstrap">
   <link rel="stylesheet" href="{{ media }}/css/echo.css">
   <style id="dark-styles" media="(prefers-color-scheme: dark)">
     {{ dark_css }}
@@ -120,6 +122,8 @@
       else { s = 'auto'; if (m) m.content = window.matchMedia('(prefers-color-scheme: dark)').matches ? '#000000' : '#f5f5f7'; }
     }
     document.documentElement.dataset.theme = s;
+    var darkOn = (s === 'dark') || (s === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.setAttribute('data-darkmode', darkOn ? 'true' : 'false');
   })();
   </script>
   {% if (node?.css): %}
@@ -157,7 +161,7 @@
 
           <div class="top-nav-shell">
             <div class="top-nav-wrap">
-              <nav id="top-nav" class="navbar-nav" aria-label="{{ _('Main navigation') }}"></nav>
+              <nav id="top-nav" class="echo-top-nav" aria-label="{{ _('Main navigation') }}"></nav>
               <div class="top-nav-more" id="top-nav-more" hidden>
                 <button type="button" class="top-nav-more-btn" id="top-nav-more-btn" aria-expanded="false" aria-haspopup="true">
                   <span class="nav-label">{{ _('More') }}</span>
@@ -172,14 +176,13 @@
           <button type="button" class="header-btn" id="theme-toggle" aria-label="{{ _('Toggle theme') }}" title="{{ _('Theme') }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
           </button>
-          <a class="header-btn" href="{{ dispatcher.build_url('logout') }}" aria-label="{{ _('Logout') }}" title="{{ _('Logout') }}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
-          </a>
           </div>
         </div>
       </div>
-      <div class="sub-nav-container">
-        <nav id="sub-nav" class="sub-nav" aria-label="{{ _('Section navigation') }}"></nav>
+      {# Hidden hooks for scripts/plugins that expect bootstrap menu IDs #}
+      <div class="echo-bootstrap-hooks" hidden aria-hidden="true">
+        <ul id="modemenu" class="nav"></ul>
+        <ul id="topmenu"></ul>
       </div>
     </header>
 
@@ -194,7 +197,8 @@
 
     <div id="echo-content-wrap">
       <div class="content-tabs-container">
-        <nav id="content-tabs"></nav>
+        <nav id="content-tabs" class="tabs" aria-label="{{ _('Section tabs') }}"></nav>
+        <div id="tabmenu" class="tabs echo-tabmenu-hook" hidden aria-hidden="true"></div>
       </div>
 
 {% if (!blank_page): %}

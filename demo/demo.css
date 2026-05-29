@@ -60,9 +60,7 @@ body.has-content-tabs #content-tabs {
   display: flex;
 }
 
-body.has-sub-nav .sub-nav {
-  display: flex;
-}
+/* L2 lives in .nav-dropdown under each .nav-section.has-dropdown */
 
 #view-settings[hidden],
 #view-login[hidden],

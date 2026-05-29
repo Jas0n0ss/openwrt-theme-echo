@@ -26,6 +26,68 @@
 
   showView('dashboard');
 
+  var navBar = document.getElementById('echo-nav-bar');
+  if (navBar) {
+    navBar.addEventListener('click', function(e) {
+      var section = e.target.closest('.nav-section.has-dropdown');
+      if (!section || e.target.closest('.nav-dropdown-item') || e.target.closest('.nav-logout-link')) return;
+
+      var btn = section.querySelector('.nav-top:not(.nav-logout-link)');
+      if (!btn || e.target.closest('.nav-top') !== btn) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      function setDropdownOpen(sec, isOpen) {
+        var panel = sec && sec.querySelector('.nav-dropdown');
+        if (!panel) return;
+        if (isOpen) {
+          panel.removeAttribute('hidden');
+          panel.setAttribute('aria-hidden', 'false');
+        } else {
+          panel.setAttribute('hidden', '');
+          panel.setAttribute('aria-hidden', 'true');
+        }
+      }
+
+      function closeAll() {
+        document.querySelectorAll('.nav-section.has-dropdown').forEach(function(s) {
+          s.classList.remove('open');
+          var b = s.querySelector('.nav-top:not(.nav-logout-link)');
+          if (b) b.setAttribute('aria-expanded', 'false');
+          setDropdownOpen(s, false);
+        });
+      }
+
+      document.querySelectorAll('.nav-section.has-dropdown .nav-dropdown').forEach(function(p) {
+        p.setAttribute('hidden', '');
+        p.setAttribute('aria-hidden', 'true');
+      });
+
+      var open = !section.classList.contains('open');
+      closeAll();
+      if (open) {
+        section.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+        setDropdownOpen(section, true);
+      }
+    });
+
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('.nav-section.has-dropdown > .nav-top')) return;
+      document.querySelectorAll('.nav-section.has-dropdown').forEach(function(s) {
+        s.classList.remove('open');
+        var b = s.querySelector('.nav-top:not(.nav-logout-link)');
+        if (b) b.setAttribute('aria-expanded', 'false');
+        var panel = s.querySelector('.nav-dropdown');
+        if (panel) {
+          panel.setAttribute('hidden', '');
+          panel.setAttribute('aria-hidden', 'true');
+        }
+      });
+    });
+  }
+
   function applyTheme(mode) {
     var labels = { auto: '系统', light: '浅色', dark: '深色' };
     document.documentElement.dataset.theme = mode;

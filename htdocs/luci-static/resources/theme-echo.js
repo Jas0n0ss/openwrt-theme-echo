@@ -25,9 +25,13 @@ return baseclass.extend({
 	apply: function(mode) {
 		var d = document.getElementById('dark-styles');
 		var m = document.getElementById('meta-theme-color');
-		document.documentElement.dataset.theme = mode;
+		var root = document.documentElement;
+		var dark = false;
+
+		root.dataset.theme = mode;
 
 		if (mode === 'dark') {
+			dark = true;
 			if (d) d.media = 'all';
 			if (m) m.content = '#000000';
 		} else if (mode === 'light') {
@@ -35,9 +39,12 @@ return baseclass.extend({
 			if (m) m.content = '#f5f5f7';
 		} else {
 			if (d) d.media = '(prefers-color-scheme: dark)';
-			var dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+			dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 			if (m) m.content = dark ? '#000000' : '#f5f5f7';
 		}
+
+		/* Keep bootstrap cascade.css dark tokens in sync */
+		root.setAttribute('data-darkmode', dark ? 'true' : 'false');
 	},
 
 	updateToggle: function(mode) {

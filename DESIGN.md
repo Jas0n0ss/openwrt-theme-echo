@@ -55,17 +55,28 @@
 
 ---
 
-## 布局架构（v1.5.11）
+## 技术分层（v1.6.0 — Bootstrap 底座）
+
+| 层 | 来源 | 作用 |
+|----|------|------|
+| **CBI / 表单 / 表格** | `luci-theme-bootstrap` → `cascade.css` | LuCI 标准组件，第三方 app 兼容 |
+| **兼容桥** | `bootstrap-compat.css` | CSS 变量映射、`#modemenu` 隐藏、下拉防泄漏 |
+| **菜单逻辑** | `menu-bootstrap-core.js` | 与 `menu-bootstrap.js` 一致的 URL / 激活 / 排序 / L3 tabs |
+| **Echo 壳层** | `layout.css` + `menu-echo.js` | 顶栏、图标、点击下拉 L2、Network Map |
+| **Echo 皮肤** | `glass.css` / `openwrt.css` / UCI 配色 | Apple × OpenWrt 视觉 |
+
+依赖：`LUCI_DEPENDS:=+luci-theme-bootstrap`
+
+## 布局架构（v1.6.0）
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│ Brand          L1: 状态 网络 系统 VPN 软件          Actions   │
+│ Brand     L1▼ 状态 系统 服务 网络 统计 …插件 退出    [主题]   │
+│              └ 点击展开 L2 下拉（非横向条）                   │
 ├──────────────────────────────────────────────────────────────┤
-│ L2: 概览 · 路由 · 防火墙  （横向滚动，移动端友好）            │
+│ L3: #content-tabs（与 bootstrap tabmenu 同深度规则）          │
 ├──────────────────────────────────────────────────────────────┤
-│ L3: content-tabs（仅深层页面 / 插件内页）                     │
-├──────────────────────────────────────────────────────────────┤
-│ Main — Network Map、仪表盘表格、LuCI CBI 内容                 │
+│ Main — Network Map、仪表盘表格、LuCI CBI（bootstrap 样式）    │
 ├──────────────────────────────────────────────────────────────┤
 │ Footer — Echo 版本 · OpenWrt 版本                             │
 └──────────────────────────────────────────────────────────────┘

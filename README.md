@@ -4,9 +4,9 @@
 
 Apple 极简美学 × OpenWrt 仪表盘 — 面向 OpenWrt / ImmortalWrt / LEDE 的现代 LuCI 主题。
 
-![Echo Theme Preview](docs/preview.svg)
+![Echo Theme Preview — OpenWrt 仪表盘概览（深色模式）](docs/preview.jpg)
 
-**当前版本：** 1.5.12（见 [`ucode/template/themes/echo/version`](ucode/template/themes/echo/version)）
+**当前版本：** 1.6.0（见 [`ucode/template/themes/echo/version`](ucode/template/themes/echo/version)）
 
 ---
 
@@ -14,9 +14,10 @@ Apple 极简美学 × OpenWrt 仪表盘 — 面向 OpenWrt / ImmortalWrt / LEDE 
 
 | 模块 | 说明 |
 |------|------|
-| **顶部导航** | 主菜单居中，Bootstrap 风格；PC / 移动端自适应 |
-| **二级菜单** | 系统分区（状态 / 网络 / 系统）显示 L2；有二级菜单时隐藏重复页面标题 |
-| **智能分组** | VPN 类插件归入 **VPN** 主菜单；其余第三方插件归入 **软件** |
+| **Bootstrap 底座** | 依赖 `luci-theme-bootstrap` 的 `cascade.css`（CBI/表单/组件）；Echo 只覆盖导航与视觉 |
+| **顶部导航** | 菜单逻辑对齐 `menu-bootstrap.js`；Echo 下拉式 L1/L2；PC / 移动端自适应 |
+| **二级菜单** | 点击主菜单展开下拉后选择 L2（主菜单不直接跳转）；有 L2 时隐藏重复标题 |
+| **经典主菜单** | 与 LuCI 一致：状态 / 系统 / 服务 / 网络 / 统计 / 插件… / 退出 |
 | **Network Map** | 概览页网口 + 无线射频卡片，中文 i18n |
 | **仪表盘表格** | 系统资源 / 接口 / 流量 / 客户端四表，保留 LuCI 原生详情 |
 | **第三方 UI** | `ui-echo.js` 自动美化 luci-app 注入的表格、表单、Modal、Tab |
@@ -73,6 +74,7 @@ cd openwrt-theme-echo
 # 上传到路由器：
 opkg install dist/luci-theme-echo_*.ipk
 opkg install dist/luci-app-echo-config_*.ipk
+# luci-theme-echo 依赖 luci-theme-bootstrap（提供 cascade.css）；固件一般已自带
 
 uci set luci.main.mediaurlbase='/luci-static/echo'
 uci commit luci
@@ -116,9 +118,8 @@ uci commit echo
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│ [Logo]     状态  网络  系统  VPN  软件     [主题] [退出]      │  ← L1 主菜单
-├──────────────────────────────────────────────────────────────┤
-│           概览   路由   防火墙                               │  ← L2 二级（仅多子项时）
+│ [Logo]  状态▼  系统▼  服务▼  网络▼  统计▼  …插件…  退出 [主题]│  ← L1（LuCI 顺序）
+│              └─ 点击后：概览 / 防火墙 / 路由 …（下拉 L2）       │
 ├──────────────────────────────────────────────────────────────┤
 │           （L3 tabs，仅深层页面 / 插件内页）                  │
 ├──────────────────────────────────────────────────────────────┤
@@ -126,8 +127,8 @@ uci commit echo
 └──────────────────────────────────────────────────────────────┘
 ```
 
-- **L1**：OpenWrt 系统项 + 虚拟分组（VPN / 软件）
-- **L2**：当前分区子页面；**不重复**显示 `#echo-header` 标题
+- **L1**：按 LuCI `order` + 经典顺序排列；第三方插件各自一级菜单
+- **L2**：点击 L1 后在下拉中选择；**不重复**显示 `#echo-header` 标题
 - **L3+**：插件内页或 network/wifi 等深层 Tab
 
 菜单逻辑见 [`htdocs/luci-static/resources/menu-echo.js`](htdocs/luci-static/resources/menu-echo.js)。
@@ -167,7 +168,9 @@ openwrt-theme-echo/
 │   ├── echo/css/                 # 样式（layout, glass, dashboard…）
 │   ├── echo/icons/menu/          # SVG 菜单图标
 │   └── resources/
-│       ├── menu-echo.js          # 顶部 / 二级 / L3 菜单 + VPN/软件分组
+│       ├── menu-bootstrap-core.js # 与 bootstrap 一致的菜单规则
+│       ├── menu-echo.js          # Echo 顶栏 DOM + 点击下拉 L2 + L3 tabs
+│       ├── echo/css/bootstrap-compat.css  # cascade 变量桥接
 │       ├── ui-echo.js            # 第三方 luci-app UI 增强
 │       ├── dashboard-echo.js     # 概览 Network Map + 表格
 │       └── theme-echo.js         # 深浅色切换

@@ -59,7 +59,7 @@ body.theme-openwrt .nav-top:hover:not(.active) {
 	color: var(--echo-nav-text-hover);
 }
 
-body.theme-openwrt .sub-nav-item.active {
+body.theme-openwrt .nav-dropdown-item.active {
 	background: var(--echo-nav-active-bg);
 	color: var(--echo-nav-active-text);
 }

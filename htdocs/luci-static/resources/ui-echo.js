@@ -124,7 +124,7 @@ return baseclass.extend({
 		});
 
 		var headerTitle = document.getElementById('header-title');
-		var activeSub = document.querySelector('#sub-nav .sub-nav-item.active .nav-label');
+		var activeSub = document.querySelector('.nav-dropdown-item.active .nav-label');
 		var compareTitle = headerTitle && headerTitle.textContent
 			? headerTitle.textContent.trim()
 			: (activeSub ? activeSub.textContent.trim() : '');

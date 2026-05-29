@@ -32,6 +32,7 @@ build_ipk() {
 			mkdir -p "$data_root/etc/config"
 
 			cp -R "$ROOT/htdocs/luci-static/echo/." "$data_root/www/luci-static/echo/"
+			cp "$ROOT/htdocs/luci-static/resources/menu-bootstrap-core.js" "$data_root/www/luci-static/resources/"
 			cp "$ROOT/htdocs/luci-static/resources/menu-echo.js" "$data_root/www/luci-static/resources/"
 			cp "$ROOT/htdocs/luci-static/resources/ui-echo.js" "$data_root/www/luci-static/resources/"
 			cp "$ROOT/htdocs/luci-static/resources/theme-echo.js" "$data_root/www/luci-static/resources/"
@@ -99,7 +100,7 @@ EOF
 mkdir -p "$OUT"
 chmod +x "$ROOT/scripts/compile-i18n.sh"
 "$ROOT/scripts/compile-i18n.sh" "$I18N_DIR"
-build_ipk "luci-theme-echo" "Echo LuCI Theme" "libc"
+build_ipk "luci-theme-echo" "Echo LuCI Theme" "libc, luci-theme-bootstrap"
 build_ipk "luci-app-echo-config" "Echo Theme Configuration" "luci-theme-echo, luci-base"
 
 echo ""

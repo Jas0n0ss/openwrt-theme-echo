@@ -77,15 +77,19 @@
 }
 
 #top-nav,
-.navbar-nav {
+.echo-top-nav {
 	display: inline-flex;
-	align-items: center;
+	align-items: flex-start;
 	justify-content: center;
 	flex-wrap: nowrap;
 	gap: 4px;
 	min-width: 0;
 	max-width: 100%;
-	overflow: hidden;
+	overflow: visible;
+}
+
+#echo-nav-bar {
+	overflow: visible;
 }
 
 .openwrt-brand-inner,
@@ -147,6 +151,117 @@
 
 .nav-section {
 	flex-shrink: 0;
+	position: relative;
+	display: inline-flex;
+	flex-direction: column;
+	align-items: flex-start;
+	vertical-align: top;
+}
+
+.nav-section.has-dropdown .nav-top {
+	padding-right: 28px;
+}
+
+.nav-caret {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin-left: 2px;
+	opacity: 0.75;
+	flex-shrink: 0;
+}
+
+/* Closed by default — LuCI bootstrap may set [role=menu] { display:flex } */
+#echo-nav-bar .nav-section:not(.open) > .nav-dropdown {
+	display: none !important;
+	visibility: hidden !important;
+	pointer-events: none !important;
+	height: 0 !important;
+	min-height: 0 !important;
+	max-height: 0 !important;
+	overflow: hidden !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	border: none !important;
+	box-shadow: none !important;
+}
+
+#echo-nav-bar .nav-section.open > .nav-dropdown {
+	display: flex !important;
+	visibility: visible !important;
+	pointer-events: auto !important;
+	height: auto !important;
+	max-height: min(70vh, 420px) !important;
+	overflow-y: auto !important;
+	padding: 6px 0 !important;
+	border: 1px solid var(--echo-border) !important;
+	box-shadow: var(--echo-shadow-lg, 0 12px 32px rgba(0, 0, 0, 0.28)) !important;
+}
+
+.nav-dropdown {
+	position: absolute;
+	top: calc(100% + 4px);
+	left: 0;
+	min-width: 200px;
+	max-width: min(280px, 90vw);
+	flex-direction: column;
+	background: var(--echo-nav-dropdown-bg, #1a1a1e);
+	border-radius: var(--echo-radius-md);
+	z-index: 1200;
+}
+
+.nav-dropdown-item {
+	display: block;
+	padding: 8px 16px;
+	color: var(--echo-nav-text);
+	font-size: var(--echo-text-sm);
+	font-weight: 500;
+	text-decoration: none;
+	white-space: nowrap;
+	transition: background var(--echo-duration) var(--echo-ease),
+		color var(--echo-duration) var(--echo-ease);
+}
+
+.nav-dropdown-item:hover {
+	background: var(--echo-nav-active-bg);
+	color: var(--echo-nav-text-hover);
+	text-decoration: none;
+}
+
+.nav-dropdown-item.active {
+	background: var(--echo-nav-active-bg);
+	color: var(--echo-nav-active-text);
+	font-weight: 600;
+}
+
+.top-nav-more-menu .nav-dropdown {
+	left: auto;
+	right: 0;
+}
+
+.nav-section.has-dropdown.open > .nav-top {
+	background: var(--echo-nav-active-bg);
+	color: var(--echo-nav-text-hover);
+}
+
+.nav-section.nav-logout {
+	flex-shrink: 0;
+}
+
+.nav-logout-link {
+	font-weight: 500;
+}
+
+.nav-logout-link .nav-label {
+	display: inline;
+}
+
+.nav-top-trigger {
+	cursor: pointer;
+}
+
+.sub-nav-container {
+	display: none !important;
 }
 
 .nav-top {
@@ -240,65 +355,6 @@
 .top-nav-more-menu .nav-top {
 	width: 100%;
 	justify-content: flex-start;
-}
-
-.sub-nav-container {
-	padding-top: 0;
-	padding-bottom: 0;
-}
-
-.sub-nav {
-	display: none;
-	align-items: center;
-	justify-content: flex-start;
-	flex-wrap: nowrap;
-	gap: 4px;
-	padding: 8px 0 10px;
-	border-top: 1px solid var(--echo-border);
-	overflow-x: auto;
-	-webkit-overflow-scrolling: touch;
-	scrollbar-width: none;
-	-ms-overflow-style: none;
-}
-
-.sub-nav::-webkit-scrollbar {
-	display: none;
-}
-
-.sub-nav.active,
-body.has-sub-nav .sub-nav {
-	display: flex;
-}
-
-.sub-nav-item {
-	display: inline-flex;
-	align-items: center;
-	padding: 6px 14px;
-	border-radius: 999px;
-	color: var(--echo-nav-text);
-	font-size: 12px;
-	font-weight: 500;
-	text-decoration: none;
-	transition: all var(--echo-duration) var(--echo-ease);
-	white-space: nowrap;
-	flex-shrink: 0;
-}
-
-.sub-nav-item:hover {
-	color: var(--echo-nav-text-hover);
-	background: var(--echo-nav-active-bg);
-	text-decoration: none;
-}
-
-.sub-nav-item.active {
-	color: var(--echo-nav-active-text);
-	background: var(--echo-nav-active-bg);
-	font-weight: 600;
-}
-
-.sub-nav-l3 {
-	font-size: 11px;
-	opacity: 0.92;
 }
 
 .header-actions {
@@ -469,7 +525,6 @@ body.has-content-tabs #content-tabs {
 
 @media (max-width: 960px) {
 	.nav-bar-container,
-	.sub-nav-container,
 	.header-toolbar-container,
 	.content-tabs-container,
 	#echo-footer .footer-inner,
@@ -510,9 +565,17 @@ body.has-content-tabs #content-tabs {
 		min-height: 44px;
 	}
 
-	.sub-nav-item {
-		padding: 8px 14px;
-		min-height: 36px;
+	.nav-section.has-dropdown .nav-top {
+		padding-right: 10px;
+	}
+
+	.nav-caret {
+		margin-left: 0;
+	}
+
+	.nav-dropdown-item {
+		padding: 10px 16px;
+		min-height: 40px;
 	}
 
 	.header-btn {

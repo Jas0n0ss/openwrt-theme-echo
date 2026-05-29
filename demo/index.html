@@ -43,21 +43,48 @@
           </div>
           <div class="top-nav-shell">
             <div class="top-nav-wrap">
-              <nav id="top-nav" class="navbar-nav">
-                <div class="nav-section is-active">
-                  <a class="nav-top active" href="#"><span class="nav-icon nav-icon-mask" style="-webkit-mask-image:url('../htdocs/luci-static/echo/icons/menu/status.svg');mask-image:url('../htdocs/luci-static/echo/icons/menu/status.svg');"></span><span class="nav-label">状态</span></a>
+              <nav id="top-nav" class="echo-top-nav">
+                <div class="nav-section is-active has-dropdown">
+                  <a class="nav-top nav-top-trigger active" href="#" aria-haspopup="true" aria-expanded="false"><span class="nav-icon nav-icon-mask" style="-webkit-mask-image:url('../htdocs/luci-static/echo/icons/menu/status.svg');mask-image:url('../htdocs/luci-static/echo/icons/menu/status.svg');"></span><span class="nav-label">状态</span><span class="nav-caret" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M6 9l6 6 6-6"/></svg></span></a>
+                  <div class="nav-dropdown" hidden aria-hidden="true">
+                    <a class="nav-dropdown-item active" href="#" role="menuitem"><span class="nav-label">概览</span></a>
+                    <a class="nav-dropdown-item" href="#" role="menuitem"><span class="nav-label">防火墙</span></a>
+                    <a class="nav-dropdown-item" href="#" role="menuitem"><span class="nav-label">路由</span></a>
+                    <a class="nav-dropdown-item" href="#" role="menuitem"><span class="nav-label">系统日志</span></a>
+                    <a class="nav-dropdown-item" href="#" role="menuitem"><span class="nav-label">内核日志</span></a>
+                    <a class="nav-dropdown-item" href="#" role="menuitem"><span class="nav-label">进程</span></a>
+                  </div>
                 </div>
-                <div class="nav-section">
-                  <a class="nav-top" href="#"><span class="nav-icon nav-icon-mask" style="-webkit-mask-image:url('../htdocs/luci-static/echo/icons/menu/network.svg');mask-image:url('../htdocs/luci-static/echo/icons/menu/network.svg');"></span><span class="nav-label">网络</span></a>
+                <div class="nav-section has-dropdown">
+                  <a class="nav-top nav-top-trigger" href="#" aria-haspopup="true" aria-expanded="false"><span class="nav-icon nav-icon-mask" style="-webkit-mask-image:url('../htdocs/luci-static/echo/icons/menu/system.svg');mask-image:url('../htdocs/luci-static/echo/icons/menu/system.svg');"></span><span class="nav-label">系统</span><span class="nav-caret" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M6 9l6 6 6-6"/></svg></span></a>
+                  <div class="nav-dropdown" hidden aria-hidden="true">
+                    <a class="nav-dropdown-item" href="#" role="menuitem"><span class="nav-label">系统</span></a>
+                    <a class="nav-dropdown-item" href="#" role="menuitem"><span class="nav-label">管理权</span></a>
+                    <a class="nav-dropdown-item" href="#" role="menuitem"><span class="nav-label">软件包</span></a>
+                  </div>
                 </div>
-                <div class="nav-section">
-                  <a class="nav-top" href="#"><span class="nav-icon nav-icon-mask" style="-webkit-mask-image:url('../htdocs/luci-static/echo/icons/menu/vpn.svg');mask-image:url('../htdocs/luci-static/echo/icons/menu/vpn.svg');"></span><span class="nav-label">VPN</span></a>
+                <div class="nav-section has-dropdown">
+                  <a class="nav-top nav-top-trigger" href="#" aria-haspopup="true" aria-expanded="false"><span class="nav-icon nav-icon-mask" style="-webkit-mask-image:url('../htdocs/luci-static/echo/icons/menu/services.svg');mask-image:url('../htdocs/luci-static/echo/icons/menu/services.svg');"></span><span class="nav-label">服务</span><span class="nav-caret" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M6 9l6 6 6-6"/></svg></span></a>
+                  <div class="nav-dropdown" hidden aria-hidden="true">
+                    <a class="nav-dropdown-item" href="#" role="menuitem"><span class="nav-label">服务</span></a>
+                  </div>
                 </div>
-                <div class="nav-section">
-                  <a class="nav-top" href="#"><span class="nav-icon nav-icon-mask" style="-webkit-mask-image:url('../htdocs/luci-static/echo/icons/menu/store.svg');mask-image:url('../htdocs/luci-static/echo/icons/menu/store.svg');"></span><span class="nav-label">软件</span></a>
+                <div class="nav-section has-dropdown">
+                  <a class="nav-top nav-top-trigger" href="#" aria-haspopup="true" aria-expanded="false"><span class="nav-icon nav-icon-mask" style="-webkit-mask-image:url('../htdocs/luci-static/echo/icons/menu/network.svg');mask-image:url('../htdocs/luci-static/echo/icons/menu/network.svg');"></span><span class="nav-label">网络</span><span class="nav-caret" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M6 9l6 6 6-6"/></svg></span></a>
+                  <div class="nav-dropdown" hidden aria-hidden="true">
+                    <a class="nav-dropdown-item" href="#" role="menuitem"><span class="nav-label">接口</span></a>
+                    <a class="nav-dropdown-item" href="#" role="menuitem"><span class="nav-label">无线</span></a>
+                    <a class="nav-dropdown-item" href="#" role="menuitem"><span class="nav-label">防火墙</span></a>
+                  </div>
                 </div>
-                <div class="nav-section">
-                  <a class="nav-top" href="#"><span class="nav-icon nav-icon-mask" style="-webkit-mask-image:url('../htdocs/luci-static/echo/icons/menu/system.svg');mask-image:url('../htdocs/luci-static/echo/icons/menu/system.svg');"></span><span class="nav-label">系统</span></a>
+                <div class="nav-section has-dropdown">
+                  <a class="nav-top nav-top-trigger" href="#" aria-haspopup="true" aria-expanded="false"><span class="nav-icon nav-icon-mask" style="-webkit-mask-image:url('../htdocs/luci-static/echo/icons/menu/statistics.svg');mask-image:url('../htdocs/luci-static/echo/icons/menu/statistics.svg');"></span><span class="nav-label">统计</span><span class="nav-caret" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M6 9l6 6 6-6"/></svg></span></a>
+                  <div class="nav-dropdown" hidden aria-hidden="true">
+                    <a class="nav-dropdown-item" href="#" role="menuitem"><span class="nav-label">实时图表</span></a>
+                  </div>
+                </div>
+                <div class="nav-section nav-logout">
+                  <a class="nav-top nav-logout-link" href="#"><span class="nav-label">退出</span></a>
                 </div>
               </nav>
               <div class="top-nav-more" id="top-nav-more" hidden>
@@ -70,13 +97,6 @@
             <button type="button" class="header-btn" id="theme-toggle" aria-label="主题"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="5"/></svg></button>
           </div>
         </div>
-      </div>
-      <div class="sub-nav-container">
-        <nav id="sub-nav" class="sub-nav active">
-          <a class="sub-nav-item active" href="#"><span class="nav-label">概览</span></a>
-          <a class="sub-nav-item" href="#"><span class="nav-label">路由</span></a>
-          <a class="sub-nav-item" href="#"><span class="nav-label">防火墙</span></a>
-        </nav>
       </div>
     </header>
 

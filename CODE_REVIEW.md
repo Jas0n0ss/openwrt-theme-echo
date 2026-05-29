@@ -7,7 +7,8 @@
 | 层级 | 文件 | 职责 |
 |------|------|------|
 | 模板 | `ucode/template/themes/echo/*.ut` | HTML 骨架、资源引用、UCI 主题变量 |
-| 导航 | `menu-echo.js` | L1/L2/L3 菜单、VPN/软件虚拟分组、溢出「更多」 |
+| 导航 | `menu-bootstrap-core.js` + `menu-echo.js` | 逻辑对齐 bootstrap；Echo 下拉 L2 DOM；L3 tabs |
+| 底座 | `cascade.css` + `bootstrap-compat.css` | 依赖 `luci-theme-bootstrap`，Echo 只覆盖壳层 |
 | 概览 | `dashboard-echo.js` | Network Map、四表仪表盘、RPC 轮询 |
 | 增强 | `ui-echo.js` | 第三方 `.cbi-tabmenu` / 表格 / Modal 适配 |
 | 主题 | `theme-echo.js` | localStorage 深浅色三态 |
@@ -19,8 +20,8 @@
 
 ### 已通过 / 设计合理
 
-1. **菜单分层** — L2 仅在 `sub-nav` 展示，L3+ 才用 `content-tabs`，避免概览/防火墙/路由重复出现。
-2. **虚拟分组** — `_buildTopEntries()` 将 VPN 插件与第三方软件分别归入 `_echo_vpn` / `_echo_apps`，顶栏更整洁。
+1. **菜单分层** — L2 在主菜单项 `.nav-dropdown` 下拉展示，L3+ 才用 `content-tabs`，避免概览/防火墙/路由重复出现。
+2. **经典主菜单** — 按 LuCI `order` 与 Status→System→Services→Network 顺序排列；插件保持独立一级菜单。
 3. **无重复标题** — `has-sub-nav` 时隐藏 `#echo-header`，符合「导航即标题」。
 4. **构建链** — `build-ipk.sh` + `verify-ipk.sh` + GitHub Actions 形成可重复验证的发布流程。
 5. **Legacy 检查** — `verify-ipk.sh` 扫描 BE88U/ASUS 残留，防止品牌回退。
@@ -40,8 +41,8 @@
 
 1. **i18n 与 standalone IPK** — ~~`build-ipk.sh` 未打包 `.lmo`~~ 已修复：构建时 `msgfmt` 编译 `po/zh_Hans/*.po` 并安装到 `/usr/lib/lua/luci/i18n/`。
 2. **LEDE 旧模板** — `luasrc/view/themes/echo/header.htm` 仍为侧栏 + 状态栏布局，与 ucode 版不同步；仅影响 18.06 用户，可择机对齐或标注 deprecated。
-3. **VPN 识别规则** — 基于名称 / 图标启发式，新插件若命名特殊可能进「软件」分组，可在 `menu-echo.js` 的 `_isVpnMenu` 中扩展关键词。
-4. **单插件分组** — VPN / 软件组内仅 1 个插件时不显示 L2（与系统分区一致），行为符合设计但可在文档中说明。
+3. **主菜单触发** — 有 L2 时主项 `href="#"`，须点击展开后再选子页（与经典 LuCI 一致）。
+4. **退出** — 顶栏末位文字链「退出」，不再占用右侧图标区。
 
 ## 安全与性能
 
