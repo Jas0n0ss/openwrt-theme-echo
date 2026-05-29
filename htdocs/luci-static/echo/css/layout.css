@@ -522,37 +522,27 @@ body.has-content-tabs #content-tabs {
 	flex-wrap: wrap;
 	align-items: center;
 	justify-content: center;
-	gap: 8px 16px;
+	gap: 8px 12px;
 	text-align: center;
 }
 
-.footer-firmware {
-	color: var(--echo-text-tertiary);
-}
-
-.footer-theme-link {
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-	padding: 6px 14px;
-	border-radius: var(--echo-radius-sm);
-	border: 1px solid var(--echo-primary);
-	background: var(--echo-primary-soft);
+.footer-link {
 	color: var(--echo-primary);
 	font-size: 12px;
-	font-weight: 600;
+	font-weight: 500;
 	text-decoration: none;
-	transition: background var(--echo-duration) var(--echo-ease),
-		color var(--echo-duration) var(--echo-ease),
-		border-color var(--echo-duration) var(--echo-ease);
-	white-space: nowrap;
+	transition: color var(--echo-duration) var(--echo-ease);
 }
 
-.footer-theme-link:hover {
-	background: var(--echo-primary);
-	border-color: var(--echo-primary);
-	color: #fff;
-	text-decoration: none;
+.footer-link:hover {
+	color: var(--echo-primary-hover, var(--echo-primary));
+	text-decoration: underline;
+}
+
+.footer-sep {
+	color: var(--echo-text-tertiary);
+	font-size: 12px;
+	user-select: none;
 }
 
 @media (max-width: 960px) {

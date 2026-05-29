@@ -1,22 +1,25 @@
 <%
-local distro_name = version.distname or "OpenWrt"
-if distro_name:lower():find("immortal") then
+local raw_dist = version.distname or "OpenWrt"
+local distro_name = raw_dist
+local distro_url = "https://github.com/openwrt/openwrt/tree/master"
+
+if raw_dist:lower():find("immortal") then
   distro_name = "ImmortalWrt"
-elseif distro_name:lower():find("lede") then
+  distro_url = "https://github.com/immortalwrt/immortalwrt/tree/master"
+elseif raw_dist:lower():find("lede") then
   distro_name = "LEDE"
+  distro_url = "https://github.com/coolsnowwolf/lede"
+elseif raw_dist:lower():find("openwrt") then
+  distro_name = "OpenWrt"
+  distro_url = "https://github.com/openwrt/openwrt/tree/master"
 end
-local firmware_label = distro_name
-if version.distversion then
-  firmware_label = firmware_label .. " " .. version.distversion
-end
-if version.distrevision then
-  firmware_label = firmware_label .. " (" .. version.distrevision .. ")"
-end
+
+local theme_repo = "https://github.com/Jas0n0ss/openwrt-theme-echo/"
 %>
 <% if not blank_page then %>
     </main>
     </div>
-    <footer id="echo-footer"><div class="footer-inner"><span class="footer-firmware"><%=firmware_label%></span><a class="footer-theme-link" href="https://github.com/Jas0n0ss/openwrt-theme-echo/releases/latest" target="_blank" rel="noopener noreferrer">Echo Theme · Download IPK</a></div></footer>
+    <footer id="echo-footer"><div class="footer-inner"><a class="footer-link" href="<%=distro_url%>" target="_blank" rel="noopener noreferrer"><%=distro_name%></a><span class="footer-sep" aria-hidden="true">|</span><a class="footer-link" href="<%=theme_repo%>" target="_blank" rel="noopener noreferrer">Theme</a></div></footer>
   </div>
 </div>
 <script>L.require('menu-echo')</script>
