@@ -6,7 +6,7 @@ Apple 极简美学 × OpenWrt 仪表盘 — 面向 OpenWrt / ImmortalWrt / LEDE 
 
 ![Echo Theme Preview](docs/preview.svg)
 
-**当前版本：** 1.5.11（见 [`ucode/template/themes/echo/version`](ucode/template/themes/echo/version)）
+**当前版本：** 1.5.12（见 [`ucode/template/themes/echo/version`](ucode/template/themes/echo/version)）
 
 ---
 
@@ -21,12 +21,35 @@ Apple 极简美学 × OpenWrt 仪表盘 — 面向 OpenWrt / ImmortalWrt / LEDE 
 | **仪表盘表格** | 系统资源 / 接口 / 流量 / 客户端四表，保留 LuCI 原生详情 |
 | **第三方 UI** | `ui-echo.js` 自动美化 luci-app 注入的表格、表单、Modal、Tab |
 | **主题配置** | `luci-app-echo-config` 可视化配置预设、颜色、背景 |
+| **中文 i18n** | IPK 内置 `zh_Hans` 翻译（`.lmo`），LuCI 语言设为简体中文后生效 |
+
 | **深浅色** | Auto / Light / Dark 三态 |
 | **本地 Demo** | 无需路由器即可预览 UI |
 
 ---
 
-## 快速预览
+## 简体中文
+
+IPK 已内置翻译文件（无需单独安装中文包）：
+
+| 文件 | 说明 |
+|------|------|
+| `luci-theme-echo.zh_Hans.lmo` | 主题界面（菜单、Network Map、仪表盘等） |
+| `luci-app-echo-config.zh_Hans.lmo` | 主题配置应用 |
+
+安装 `.ipk` 后，在 LuCI 中设置语言：
+
+**System → System → Language and Style → Language** → 选择 **简体中文 (zh_Hans)**
+
+或使用 UCI：
+
+```bash
+uci set luci.main.lang='zh_Hans'
+uci commit luci
+/etc/init.d/uhttpd restart
+```
+
+刷新浏览器即可看到中文界面。
 
 ```bash
 git clone https://github.com/Jas0n0ss/openwrt-theme-echo.git
@@ -125,6 +148,7 @@ uci commit echo
 
 ```bash
 # 构建 IPK
+./scripts/compile-i18n.sh   # 编译 po → lmo（build-ipk 会自动调用）
 ./scripts/build-ipk.sh
 
 # 校验包内容与版本
@@ -151,7 +175,7 @@ openwrt-theme-echo/
 ├── luci-app-echo-config/         # 主题配置 LuCI 应用
 ├── po/zh_Hans/                   # 简体中文翻译
 ├── demo/                         # 静态 UI 预览
-├── scripts/                      # build-ipk.sh, verify-ipk.sh
+├── scripts/                      # build-ipk.sh, compile-i18n.sh, verify-ipk.sh
 └── root/etc/config/echo          # 默认 UCI
 ```
 

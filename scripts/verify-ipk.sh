@@ -32,10 +32,12 @@ check_ipk() {
 			[[ -f "$TMP/usr/share/ucode/luci/template/themes/echo/header.ut" ]] || fail "missing header.ut in $ipk"
 			grep -q "theme-openwrt" "$TMP/usr/share/ucode/luci/template/themes/echo/header.ut" || fail "header.ut missing theme-openwrt"
 			grep -q "preset 'openwrt'" "$TMP/etc/config/echo" || fail "default UCI preset not openwrt"
+			[[ -f "$TMP/usr/lib/lua/luci/i18n/luci-theme-echo.zh_Hans.lmo" ]] || fail "missing luci-theme-echo zh_Hans i18n"
 			;;
 		luci-app-echo-config_*)
 			[[ -f "$TMP/www/luci-static/resources/view/echo/config.js" ]] || fail "missing config.js in $ipk"
 			grep -q "openwrt" "$TMP/www/luci-static/resources/view/echo/config.js" || fail "config.js missing openwrt preset"
+			[[ -f "$TMP/usr/lib/lua/luci/i18n/luci-app-echo-config.zh_Hans.lmo" ]] || fail "missing luci-app-echo-config zh_Hans i18n"
 			;;
 	esac
 

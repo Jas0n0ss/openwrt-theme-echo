@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: luci-theme-echo 1.5.11\n"
+"Project-Id-Version: luci-theme-echo 1.5.12\n"
 "Language: zh_Hans\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 

@@ -38,7 +38,7 @@
 
 ### 已知限制 / 后续建议
 
-1. **i18n 与 standalone IPK** — `po/zh_Hans/*.po` 在 OpenWrt 源码编译时由 `luci.mk` 处理；独立 `build-ipk.sh` 暂未打包 `.lmo`，纯 IPK 安装时部分 `_()` 字符串可能仍显示英文，除非 LuCI 运行时从 feed 加载翻译。建议后续在 build 脚本中加入 `msgfmt` 步骤。
+1. **i18n 与 standalone IPK** — ~~`build-ipk.sh` 未打包 `.lmo`~~ 已修复：构建时 `msgfmt` 编译 `po/zh_Hans/*.po` 并安装到 `/usr/lib/lua/luci/i18n/`。
 2. **LEDE 旧模板** — `luasrc/view/themes/echo/header.htm` 仍为侧栏 + 状态栏布局，与 ucode 版不同步；仅影响 18.06 用户，可择机对齐或标注 deprecated。
 3. **VPN 识别规则** — 基于名称 / 图标启发式，新插件若命名特殊可能进「软件」分组，可在 `menu-echo.js` 的 `_isVpnMenu` 中扩展关键词。
 4. **单插件分组** — VPN / 软件组内仅 1 个插件时不显示 L2（与系统分区一致），行为符合设计但可在文档中说明。

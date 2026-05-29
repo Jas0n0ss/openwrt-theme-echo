@@ -18,6 +18,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install build tools
+        run: sudo apt-get update && sudo apt-get install -y gettext
+
       - name: Read version
         id: ver
         run: echo "version=$(tr -d '[:space:]' < ucode/template/themes/echo/version)" >> "$GITHUB_OUTPUT"

@@ -8,6 +8,8 @@ ARCH="${ARCH:-all}"
 VERSION="$(tr -d '[:space:]' < "$ROOT/ucode/template/themes/echo/version")"
 RELEASE="${RELEASE:-1}"
 WRITE_AR="$ROOT/scripts/write-ar.py"
+I18N_DIR="$OUT/i18n"
+I18N_INSTALL="usr/lib/lua/luci/i18n"
 
 build_ipk() {
 	local name="$1"
@@ -38,6 +40,8 @@ build_ipk() {
 			cp "$ROOT/ucode/template/themes/echo/version" "$data_root/usr/share/ucode/luci/template/themes/echo/"
 			cp "$ROOT/root/etc/uci-defaults/30_luci-theme-echo" "$data_root/etc/uci-defaults/"
 			cp "$ROOT/root/etc/config/echo" "$data_root/etc/config/"
+			mkdir -p "$data_root/$I18N_INSTALL"
+			cp "$I18N_DIR/luci-theme-echo.zh_Hans.lmo" "$data_root/$I18N_INSTALL/"
 			cp "$ROOT/ipkg/postinst" "$control_dir/postinst"
 			chmod 755 "$control_dir/postinst"
 			;;
@@ -56,6 +60,8 @@ build_ipk() {
 				"$data_root/usr/share/rpcd/acl.d/"
 			cp "$ROOT/luci-app-echo-config/root/etc/uci-defaults/50_luci-echo-config" \
 				"$data_root/etc/uci-defaults/"
+			mkdir -p "$data_root/$I18N_INSTALL"
+			cp "$I18N_DIR/luci-app-echo-config.zh_Hans.lmo" "$data_root/$I18N_INSTALL/"
 			;;
 		*)
 			echo "Unknown package: $name" >&2
@@ -94,6 +100,8 @@ EOF
 }
 
 mkdir -p "$OUT"
+chmod +x "$ROOT/scripts/compile-i18n.sh"
+"$ROOT/scripts/compile-i18n.sh" "$I18N_DIR"
 build_ipk "luci-theme-echo" "Echo LuCI Theme" "libc"
 build_ipk "luci-app-echo-config" "Echo Theme Configuration" "luci-theme-echo, luci-base"
 
