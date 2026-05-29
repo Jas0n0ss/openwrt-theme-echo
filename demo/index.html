@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" data-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f5f7" id="meta-theme-color">
+  <link rel="icon" href="../htdocs/luci-static/echo/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../htdocs/luci-static/echo/img/favicon.svg">
+  <title>Echo Theme — OpenWrt Demo</title>
+  <link rel="stylesheet" href="../htdocs/luci-static/echo/css/echo.css">
+  <link rel="stylesheet" href="demo.css">
+  <style id="dark-styles" media="(prefers-color-scheme: dark)">
+    @import url("../htdocs/luci-static/echo/css/dark.css");
+  </style>
+</head>
+<body class="theme-openwrt echo-has-overview has-sub-nav">
+
+<div id="demo-banner" class="demo-banner">
+  <strong>OpenWrt Dashboard Demo</strong>
+  <span>本地 UI 预览 — 非真实 LuCI 环境</span>
+  <div class="demo-banner-actions">
+    <button type="button" class="demo-btn" data-view="dashboard">仪表盘</button>
+    <button type="button" class="demo-btn" data-view="settings">主题配置</button>
+    <button type="button" class="demo-btn" data-view="login">登录页</button>
+    <button type="button" class="demo-btn" id="demo-theme">主题切换</button>
+  </div>
+</div>
+
+<!-- ========== MAIN APP VIEW ========== -->
+<div id="view-app">
+<div id="echo-app">
+  <div id="echo-main">
+    <header id="echo-nav-bar">
+      <div class="nav-bar-container">
+        <div class="nav-bar-row">
+          <div class="header-brand openwrt-brand">
+            <div class="openwrt-brand-inner">
+              <div class="openwrt-logo"><img src="../htdocs/luci-static/echo/img/openwrt-logo.svg" alt="OpenWrt"></div>
+              <div class="brand-text">
+                <span class="router-hostname">Echo-Router</span>
+              </div>
+            </div>
+          </div>
+          <div class="top-nav-shell">
+            <div class="top-nav-wrap">
+              <nav id="top-nav" class="navbar-nav">
+                <div class="nav-section is-active">
+                  <a class="nav-top active" href="#"><span class="nav-icon nav-icon-mask" style="-webkit-mask-image:url('../htdocs/luci-static/echo/icons/menu/status.svg');mask-image:url('../htdocs/luci-static/echo/icons/menu/status.svg');"></span><span class="nav-label">状态</span></a>
+                </div>
+                <div class="nav-section">
+                  <a class="nav-top" href="#"><span class="nav-icon nav-icon-mask" style="-webkit-mask-image:url('../htdocs/luci-static/echo/icons/menu/network.svg');mask-image:url('../htdocs/luci-static/echo/icons/menu/network.svg');"></span><span class="nav-label">网络</span></a>
+                </div>
+                <div class="nav-section">
+                  <a class="nav-top" href="#"><span class="nav-icon nav-icon-mask" style="-webkit-mask-image:url('../htdocs/luci-static/echo/icons/menu/vpn.svg');mask-image:url('../htdocs/luci-static/echo/icons/menu/vpn.svg');"></span><span class="nav-label">VPN</span></a>
+                </div>
+                <div class="nav-section">
+                  <a class="nav-top" href="#"><span class="nav-icon nav-icon-mask" style="-webkit-mask-image:url('../htdocs/luci-static/echo/icons/menu/store.svg');mask-image:url('../htdocs/luci-static/echo/icons/menu/store.svg');"></span><span class="nav-label">软件</span></a>
+                </div>
+                <div class="nav-section">
+                  <a class="nav-top" href="#"><span class="nav-icon nav-icon-mask" style="-webkit-mask-image:url('../htdocs/luci-static/echo/icons/menu/system.svg');mask-image:url('../htdocs/luci-static/echo/icons/menu/system.svg');"></span><span class="nav-label">系统</span></a>
+                </div>
+              </nav>
+              <div class="top-nav-more" id="top-nav-more" hidden>
+                <button type="button" class="top-nav-more-btn" id="top-nav-more-btn"><span class="nav-label">更多</span></button>
+                <div class="top-nav-more-menu" id="top-nav-more-menu" hidden></div>
+              </div>
+            </div>
+          </div>
+          <div class="header-actions">
+            <button type="button" class="header-btn" id="theme-toggle" aria-label="主题"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="5"/></svg></button>
+          </div>
+        </div>
+      </div>
+      <div class="sub-nav-container">
+        <nav id="sub-nav" class="sub-nav active">
+          <a class="sub-nav-item active" href="#"><span class="nav-label">概览</span></a>
+          <a class="sub-nav-item" href="#"><span class="nav-label">路由</span></a>
+          <a class="sub-nav-item" href="#"><span class="nav-label">防火墙</span></a>
+        </nav>
+      </div>
+    </header>
+
+    <div id="echo-content-wrap">
+      <div class="content-tabs-container">
+        <nav id="content-tabs"></nav>
+      </div>
+
+    <main id="maincontent">
+      <div id="echo-overview" class="echo-overview">
+        <div class="cbi-section echo-panel echo-network-map echo-map-full">
+          <div class="cbi-section-head">网络地图</div>
+          <div class="echo-map-body">
+            <div class="echo-map-module echo-map-module-ports">
+              <div class="echo-map-module-head">网口状态</div>
+              <div class="echo-map-module-inner">
+                <div class="echo-map-ports">
+                  <div class="echo-port echo-port-up"><div class="echo-port-head"><span class="echo-port-name">WAN</span><span class="echo-port-role">广域网</span></div><span class="echo-port-speed">2.5G</span><span class="label success">已连接</span></div>
+                  <div class="echo-port echo-port-up"><div class="echo-port-head"><span class="echo-port-name">LAN1</span><span class="echo-port-role">局域网</span></div><span class="echo-port-speed">1G</span><span class="label success">已连接</span></div>
+                  <div class="echo-port echo-port-up"><div class="echo-port-head"><span class="echo-port-name">LAN2</span><span class="echo-port-role">局域网</span></div><span class="echo-port-speed">1G</span><span class="label success">已连接</span></div>
+                  <div class="echo-port echo-port-down"><div class="echo-port-head"><span class="echo-port-name">LAN3</span><span class="echo-port-role">局域网</span></div><span class="echo-port-speed">1G</span><span class="label important">断开</span></div>
+                  <div class="echo-port echo-port-up"><div class="echo-port-head"><span class="echo-port-name">10G</span><span class="echo-port-role">局域网</span></div><span class="echo-port-speed">10G</span><span class="label success">已连接</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="echo-map-divider" aria-hidden="true"></div>
+            <div class="echo-map-module echo-map-module-wifi">
+              <div class="echo-map-module-head">无线射频</div>
+              <div class="echo-map-module-inner">
+                <div class="echo-map-wifi">
+                  <div class="echo-wifi-card echo-wifi-up"><div class="echo-wifi-head"><span class="echo-wifi-badge">无线 4</span><strong>2.4 GHz</strong></div><span class="echo-wifi-ssid">OpenWrt</span><span class="echo-wifi-meta">1 接入点</span><span class="label success">活跃</span></div>
+                  <div class="echo-wifi-card echo-wifi-up"><div class="echo-wifi-head"><span class="echo-wifi-badge">无线 6</span><strong>5 GHz</strong></div><span class="echo-wifi-ssid">OpenWrt-5G</span><span class="echo-wifi-meta">1 接入点</span><span class="label success">活跃</span></div>
+                  <div class="echo-wifi-card echo-wifi-up"><div class="echo-wifi-head"><span class="echo-wifi-badge wifi7">无线 7</span><strong>6 GHz</strong></div><span class="echo-wifi-ssid">OpenWrt-6G</span><span class="echo-wifi-meta">1 接入点</span><span class="label success">活跃</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="echo-overview-divider" aria-hidden="true"></div>
+        <div class="echo-overview-grid">
+          <div class="cbi-section echo-panel">
+            <div class="cbi-section-head">系统资源</div>
+            <table class="echo-data-table">
+              <thead><tr><th>项目</th><th>数值</th><th class="echo-col-narrow">状态</th></tr></thead>
+              <tbody>
+                <tr><td>CPU 负载 (1/5/15 min)</td><td class="echo-mono" id="demo-cpu">0.42 / 0.38 / 0.35</td><td><span class="label success">正常</span></td></tr>
+                <tr><td>内存</td><td class="echo-mono" id="demo-mem">118 MB / 256 MB (58%)</td><td><span class="label success">正常</span></td></tr>
+                <tr><td>运行时间</td><td id="demo-uptime">3d 14h 22m</td><td><span class="label success">运行中</span></td></tr>
+                <tr><td>设备</td><td>Echo Demo · OpenWrt 24.10</td><td><span class="label success">OK</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="cbi-section echo-panel">
+            <div class="cbi-section-head">网络接口</div>
+            <table class="echo-data-table">
+              <thead><tr><th>接口</th><th>协议</th><th>地址</th><th class="echo-col-narrow">状态</th></tr></thead>
+              <tbody>
+                <tr><td><strong>wan</strong></td><td>PPPoE</td><td class="echo-mono">203.0.113.42</td><td><span class="label success">在线</span></td></tr>
+                <tr><td><strong>lan</strong></td><td>static</td><td class="echo-mono">192.168.1.1/24</td><td><span class="label success">在线</span></td></tr>
+                <tr><td><strong>wlan0</strong></td><td>—</td><td class="echo-mono">192.168.1.1/24</td><td><span class="label success">在线</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="cbi-section echo-panel">
+            <div class="cbi-section-head">流量统计</div>
+            <table class="echo-data-table">
+              <thead><tr><th>接口</th><th>下载</th><th>上传</th><th>合计</th></tr></thead>
+              <tbody id="demo-traffic">
+                <tr><td>wan</td><td class="echo-mono">18.2 GB</td><td class="echo-mono">6.4 GB</td><td class="echo-mono">24.6 GB</td></tr>
+                <tr><td>lan</td><td class="echo-mono">42.1 GB</td><td class="echo-mono">38.5 GB</td><td class="echo-mono">80.6 GB</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="cbi-section echo-panel">
+            <div class="cbi-section-head">活跃客户端</div>
+            <table class="echo-data-table">
+              <thead><tr><th>主机名</th><th>IP</th><th>MAC</th></tr></thead>
+              <tbody>
+                <tr><td>iPhone</td><td class="echo-mono">192.168.1.101</td><td class="echo-mono echo-dim">AA:BB:CC:DD:EE:01</td></tr>
+                <tr><td>MacBook</td><td class="echo-mono">192.168.1.102</td><td class="echo-mono echo-dim">AA:BB:CC:DD:EE:02</td></tr>
+                <tr><td>NAS</td><td class="echo-mono">192.168.1.50</td><td class="echo-mono echo-dim">AA:BB:CC:DD:EE:03</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <p class="echo-overview-note">核心状态一览。下方为 LuCI 原生详细指标（Demo 模拟）。</p>
+      </div>
+
+      <div class="cbi-section">
+        <div class="cbi-section-head">LuCI 原生概览（保留）</div>
+        <table class="echo-data-table">
+          <thead><tr><th>接口</th><th>协议</th><th>地址</th><th>状态</th></tr></thead>
+          <tbody>
+            <tr><td>wan</td><td>PPPoE</td><td>203.0.113.42</td><td><span class="label success">在线</span></td></tr>
+            <tr><td>lan</td><td>static</td><td>192.168.1.1/24</td><td><span class="label success">在线</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+    </div>
+
+    <footer id="echo-footer">
+      <div class="footer-inner">
+        <span>Echo v1.5.2 · OpenWrt Demo</span>
+        <span>LuCI openwrt-24.10</span>
+        <span>OpenWrt 24.10.0</span>
+      </div>
+    </footer>
+  </div>
+</div>
+</div>
+
+<!-- ========== SETTINGS VIEW ========== -->
+<div id="view-settings" hidden>
+  <div class="demo-settings-wrap">
+    <h1>Echo 主题配置</h1>
+    <p class="cbi-map-descr">模拟 luci-app-echo-config 配置界面</p>
+    <div class="cbi-section">
+      <div class="cbi-section-head">全局设置</div>
+      <div class="cbi-value"><div class="cbi-value-title">路由器型号</div><div class="cbi-value-field"><input type="text" id="cfg-model" value="OpenWrt"></div></div>
+      <div class="cbi-value"><div class="cbi-value-title">品牌标签</div><div class="cbi-value-field"><input type="text" id="cfg-brand" value="OpenWrt Router"></div></div>
+      <div class="cbi-value"><div class="cbi-value-title">主色（浅色）</div><div class="cbi-value-field"><input type="color" id="cfg-primary" value="#00B5E2"></div></div>
+      <div class="cbi-value"><div class="cbi-value-title">主色（深色）</div><div class="cbi-value-field"><input type="color" id="cfg-dark-primary" value="#0099CC"></div></div>
+      <div class="cbi-value"><div class="cbi-value-title">强调色</div><div class="cbi-value-field"><input type="color" id="cfg-gold" value="#00B5E2"></div></div>
+      <div class="cbi-value"><div class="cbi-value-title">仪表盘卡片</div><div class="cbi-value-field"><label><input type="checkbox" id="cfg-dashboard" checked> 启用</label></div></div>
+      <div class="cbi-page-actions"><button class="cbi-button cbi-button-apply" id="cfg-apply">保存并应用</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== LOGIN VIEW ========== -->
+<div id="view-login" hidden>
+  <div class="echo-login demo-login-page theme-openwrt">
+    <div class="echo-login-card">
+      <div class="echo-login-form-area">
+        <div class="openwrt-login-brand echo-login-brand-center">
+          <img src="../htdocs/luci-static/echo/img/openwrt-logo.svg" alt="OpenWrt" class="openwrt-login-logo">
+          <p class="router-hostname">Echo-Router</p>
+        </div>
+        <p class="echo-login-subtitle">登录以管理您的路由器</p>
+        <form class="echo-login-form" onsubmit="return false">
+        <div class="cbi-value"><label class="cbi-value-title">用户名</label><div class="cbi-value-field"><input class="cbi-input-text" value="root"></div></div>
+        <div class="cbi-value"><label class="cbi-value-title">密码</label><div class="cbi-value-field"><input class="cbi-input-password" type="password" placeholder="••••••••"></div></div>
+        <div class="cbi-page-actions"><button class="cbi-button cbi-button-apply" type="button" id="demo-login-btn">登录</button></div>
+      </form>
+      </div>
+      <div class="echo-login-footer">Echo v1.5.3 · OpenWrt Demo</div>
+    </div>
+  </div>
+</div>
+
+<script src="mock.js"></script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+/* Echo Theme — Adaptive styles for third-party LuCI apps */
+
+.echo-table-wrap {
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+	margin-bottom: 16px;
+	border-radius: var(--echo-radius-md);
+	border: 1px solid var(--echo-border);
+	background: var(--echo-bg-elevated);
+}
+
+.echo-table-wrap table {
+	margin: 0;
+}
+
+.echo-sr-title {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	border: 0;
+}
+
+.echo-control-group input,
+.echo-control-group select,
+.echo-control-group textarea {
+	max-width: 100%;
+}
+
+/* Legacy Bootstrap / Material leftovers from older apps */
+.main > .container,
+.container-fluid {
+	max-width: 100%;
+	padding: 0;
+}
+
+.main .row {
+	display: block;
+	margin: 0;
+}
+
+.main [class*="col-"] {
+	width: 100%;
+	padding: 0;
+	float: none;
+}
+
+/* Docker, DDNS, and grid-based app layouts */
+.cbi-section-table,
+.table.table-striped {
+	border-radius: var(--echo-radius-md);
+	overflow: hidden;
+}
+
+.cbi-dropdown {
+	border-radius: var(--echo-radius-sm);
+	border: 1px solid var(--echo-border-strong);
+	background: var(--echo-bg-elevated);
+}
+
+.cbi-dynlist {
+	border-radius: var(--echo-radius-sm);
+	border: 1px solid var(--echo-border);
+}
+
+.cbi-dynlist .item {
+	border-bottom: 1px solid var(--echo-border);
+	padding: 8px 12px;
+}
+
+.cbi-dynlist .item:last-child {
+	border-bottom: none;
+}
+
+/* Widget boxes from status / network modules */
+.ifacebox,
+.echo-widget-box {
+	border-radius: var(--echo-radius-md);
+	border: 1px solid var(--echo-border);
+	box-shadow: var(--echo-shadow-sm);
+	overflow: hidden;
+	margin-bottom: 12px;
+}
+
+.ifacebox-head {
+	font-weight: 600;
+	font-size: var(--echo-text-sm);
+}
+
+/* Tab menus rendered inside app content (not moved to header) */
+.cbi-tabmenu.echo-enhanced {
+	border-radius: var(--echo-radius-md) var(--echo-radius-md) 0 0;
+}
+
+/* DT (DataTables) used by some apps */
+.dataTables_wrapper {
+	font-size: var(--echo-text-sm);
+}
+
+.dataTables_wrapper .dataTables_filter input {
+	padding: 6px 10px;
+	border-radius: var(--echo-radius-sm);
+	border: 1px solid var(--echo-border-strong);
+}
+
+/* Fix pre/code blocks in app docs */
+#maincontent pre,
+#maincontent code {
+	font-family: var(--echo-font-mono);
+	font-size: var(--echo-text-xs);
+	border-radius: var(--echo-radius-sm);
+}
+
+#maincontent pre {
+	padding: 14px 16px;
+	background: var(--echo-bg);
+	border: 1px solid var(--echo-border);
+	overflow-x: auto;
+}
+
+/* LuCI progress / spinners */
+.cbi-progressbar,
+.progress {
+	border-radius: 999px;
+	height: 8px;
+	background: var(--echo-bg);
+}
+
+/* Ensure app-injected modals sit above top navigation */
+.modal.cbi-modal,
+.modal.echo-modal {
+	z-index: 1100;
+}
+
+.nav-top .nav-icon-letter,
+.nav-icon-letter {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+	border-radius: 4px;
+	background: var(--echo-nav-active-bg);
+	color: var(--echo-nav-active-text);
+	font-size: 11px;
+	font-weight: 700;
+	flex-shrink: 0;
+	line-height: 1;
+}
+
+.nav-top.readonly,
+.nav-item.readonly {
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+/* Legacy Bootstrap panels */
+.echo-panel,
+.panel,
+.well {
+	border-radius: var(--echo-radius-md);
+	border: 1px solid var(--echo-border);
+	background: var(--echo-bg-elevated);
+	padding: 12px 16px;
+	margin-bottom: 12px;
+}
+
+.panel-heading,
+.panel-title {
+	font-weight: 600;
+	margin-bottom: 8px;
+}
+
+/* App iframes (Docker terminal, etc.) */
+.echo-iframe,
+#maincontent iframe {
+	max-width: 100%;
+	border: 1px solid var(--echo-border);
+	border-radius: var(--echo-radius-sm);
+	background: var(--echo-bg-elevated);
+}
+
+/* LuCI map root from JS views */
+.echo-cbi-map {
+	width: 100%;
+}
+
+/* Bootstrap nav tabs outside CBI */
+.nav-tabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	border-bottom: 1px solid var(--echo-border);
+	margin-bottom: 16px;
+	padding: 0;
+	list-style: none;
+}
+
+.nav-tabs > li > a {
+	display: block;
+	padding: 8px 14px;
+	border-radius: var(--echo-radius-sm) var(--echo-radius-sm) 0 0;
+	color: var(--echo-text-secondary);
+	text-decoration: none;
+}
+
+.nav-tabs > li.active > a,
+.nav-tabs > li > a:hover {
+	color: var(--echo-brand-accent);
+	background: var(--echo-bg-elevated);
+}
+
+/* Pagination from legacy apps */
+.pagination {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	list-style: none;
+	padding: 0;
+}
+
+.pagination > li > a,
+.pagination > li > span {
+	display: block;
+	padding: 6px 10px;
+	border: 1px solid var(--echo-border);
+	border-radius: var(--echo-radius-sm);
+}
+
+/* Dark mode for third-party widgets */
+[data-theme="dark"] .dataTables_wrapper .dataTables_filter input {
+	background: var(--echo-bg-elevated);
+	color: var(--echo-text);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]) .dataTables_wrapper .dataTables_filter input {
+		background: var(--echo-bg-elevated);
+		color: var(--echo-text);
+	}
+}
+
+[data-theme="dark"] .echo-panel,
+[data-theme="dark"] .panel,
+[data-theme="dark"] .well,
+[data-theme="dark"] .cbi-dropdown {
+	background: var(--echo-bg-elevated);
+	border-color: var(--echo-border);
+}
+
+@media (max-width: 768px) {
+	.echo-table-wrap {
+		margin-left: -4px;
+		margin-right: -4px;
+		border-radius: var(--echo-radius-sm);
+	}
+
+	.cbi-section-table {
+		display: block;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+}

@@ -1,0 +1,28 @@
+name: Build IPK
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build IPK packages
+        run: ./scripts/build-ipk.sh
+
+      - name: Verify package contents
+        run: chmod +x ./scripts/verify-ipk.sh && ./scripts/verify-ipk.sh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: luci-echo-ipk-${{ github.sha }}
+          path: dist/*.ipk
+          retention-days: 30

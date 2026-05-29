@@ -1,0 +1,3 @@
+#!/bin/sh
+mkdir -p /www/luci-static/echo/background
+exit 0

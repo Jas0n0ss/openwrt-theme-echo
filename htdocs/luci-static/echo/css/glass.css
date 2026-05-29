@@ -1,0 +1,117 @@
+/* Echo Theme — Frosted glass (Apple-style) */
+
+:root {
+	--echo-glass-blur: 24px;
+	--echo-glass-bg: rgba(255, 255, 255, 0.78);
+	--echo-glass-bg-solid: rgba(255, 255, 255, 0.92);
+	--echo-glass-border: rgba(255, 255, 255, 0.65);
+	--echo-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.06), 0 1px 0 rgba(255, 255, 255, 0.6) inset;
+}
+
+html[data-theme="dark"],
+@media (prefers-color-scheme: dark) {
+	html:not([data-theme="light"]) {
+		--echo-glass-bg: rgba(28, 28, 30, 0.82);
+		--echo-glass-bg-solid: rgba(28, 28, 30, 0.94);
+		--echo-glass-border: rgba(255, 255, 255, 0.1);
+		--echo-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+	}
+}
+
+html[data-theme="dark"] {
+	--echo-glass-bg: rgba(28, 28, 30, 0.82);
+	--echo-glass-bg-solid: rgba(28, 28, 30, 0.94);
+	--echo-glass-border: rgba(255, 255, 255, 0.1);
+	--echo-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+}
+
+.echo-glass {
+	background: var(--echo-glass-bg);
+	backdrop-filter: blur(var(--echo-glass-blur)) saturate(180%);
+	-webkit-backdrop-filter: blur(var(--echo-glass-blur)) saturate(180%);
+	border: 1px solid var(--echo-glass-border);
+	box-shadow: var(--echo-glass-shadow);
+}
+
+#echo-status-bar,
+#echo-nav-bar,
+#echo-header,
+.content-tabs-container,
+#echo-footer,
+.cbi-section,
+.cbi-section-node,
+.echo-login-card,
+.echo-network-map,
+.status-pill {
+	background: var(--echo-glass-bg);
+	backdrop-filter: blur(var(--echo-glass-blur)) saturate(180%);
+	-webkit-backdrop-filter: blur(var(--echo-glass-blur)) saturate(180%);
+}
+
+#echo-header .header-btn {
+	background: var(--echo-glass-bg);
+	backdrop-filter: blur(var(--echo-glass-blur)) saturate(180%);
+	-webkit-backdrop-filter: blur(var(--echo-glass-blur)) saturate(180%);
+}
+
+#echo-nav-bar .nav-top,
+#echo-nav-bar .top-nav-more-btn,
+#echo-nav-bar .header-btn,
+#echo-nav-bar .sub-nav-item,
+#echo-nav-bar .sub-nav {
+	background: transparent;
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
+	box-shadow: none;
+}
+
+.top-nav-more-menu {
+	background: var(--echo-glass-bg-solid);
+	backdrop-filter: blur(var(--echo-glass-blur)) saturate(180%);
+	-webkit-backdrop-filter: blur(var(--echo-glass-blur)) saturate(180%);
+	border: 1px solid var(--echo-glass-border);
+	box-shadow: var(--echo-glass-shadow);
+}
+
+.echo-map-node,
+.echo-port,
+.echo-wifi-card {
+	background: var(--echo-glass-bg-solid);
+	backdrop-filter: blur(12px) saturate(160%);
+	-webkit-backdrop-filter: blur(12px) saturate(160%);
+}
+
+#echo-main {
+	background: var(--echo-bg);
+}
+
+#echo-main::before {
+	content: "";
+	position: fixed;
+	inset: 0;
+	pointer-events: none;
+	z-index: -1;
+	background:
+		radial-gradient(ellipse 80% 50% at 10% 0%, rgba(0, 181, 226, 0.06), transparent 55%),
+		radial-gradient(ellipse 60% 40% at 90% 100%, rgba(0, 113, 227, 0.04), transparent 50%);
+}
+
+html[data-theme="dark"] #echo-main::before,
+@media (prefers-color-scheme: dark) {
+	html:not([data-theme="light"]) #echo-main::before {
+		background:
+			radial-gradient(ellipse 80% 50% at 10% 0%, rgba(0, 199, 255, 0.08), transparent 55%),
+			radial-gradient(ellipse 60% 40% at 90% 100%, rgba(10, 132, 255, 0.05), transparent 50%);
+	}
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+	.echo-glass,
+	#echo-status-bar,
+	#echo-nav-bar,
+	#echo-header,
+	.cbi-section,
+	.echo-login-card {
+		background: var(--echo-bg-elevated);
+	}
+}

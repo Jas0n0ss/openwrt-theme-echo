@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+# Build .ipk packages for luci-theme-echo and luci-app-echo-config
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+OUT="$ROOT/dist"
+ARCH="${ARCH:-all}"
+VERSION="$(tr -d '[:space:]' < "$ROOT/ucode/template/themes/echo/version")"
+RELEASE="${RELEASE:-1}"
+WRITE_AR="$ROOT/scripts/write-ar.py"
+
+build_ipk() {
+	local name="$1"
+	local title="$2"
+	local depends="$3"
+	local staging="$OUT/staging-$name"
+	local control_dir="$OUT/control-$name"
+	local data_root="$staging/root"
+	local ipk="$OUT/${name}_${VERSION}-${RELEASE}_${ARCH}.ipk"
+
+	rm -rf "$staging" "$control_dir" "$ipk"
+	mkdir -p "$data_root" "$control_dir"
+
+	case "$name" in
+		luci-theme-echo)
+			mkdir -p "$data_root/www/luci-static/echo"
+			mkdir -p "$data_root/www/luci-static/resources"
+			mkdir -p "$data_root/usr/share/ucode/luci/template/themes/echo"
+			mkdir -p "$data_root/etc/uci-defaults"
+			mkdir -p "$data_root/etc/config"
+
+			cp -R "$ROOT/htdocs/luci-static/echo/." "$data_root/www/luci-static/echo/"
+			cp "$ROOT/htdocs/luci-static/resources/menu-echo.js" "$data_root/www/luci-static/resources/"
+			cp "$ROOT/htdocs/luci-static/resources/ui-echo.js" "$data_root/www/luci-static/resources/"
+			cp "$ROOT/htdocs/luci-static/resources/theme-echo.js" "$data_root/www/luci-static/resources/"
+			cp "$ROOT/htdocs/luci-static/resources/dashboard-echo.js" "$data_root/www/luci-static/resources/"
+			cp "$ROOT/ucode/template/themes/echo/"*.ut "$data_root/usr/share/ucode/luci/template/themes/echo/"
+			cp "$ROOT/ucode/template/themes/echo/version" "$data_root/usr/share/ucode/luci/template/themes/echo/"
+			cp "$ROOT/root/etc/uci-defaults/30_luci-theme-echo" "$data_root/etc/uci-defaults/"
+			cp "$ROOT/root/etc/config/echo" "$data_root/etc/config/"
+			cp "$ROOT/ipkg/postinst" "$control_dir/postinst"
+			chmod 755 "$control_dir/postinst"
+			;;
+		luci-app-echo-config)
+			mkdir -p "$data_root/www/luci-static/resources/view/echo"
+			mkdir -p "$data_root/usr/share/luci/menu.d"
+			mkdir -p "$data_root/usr/share/rpcd/acl.d"
+			mkdir -p "$data_root/etc/uci-defaults"
+			mkdir -p "$data_root/www/luci-static/echo/background"
+
+			cp "$ROOT/luci-app-echo-config/htdocs/luci-static/resources/view/echo/config.js" \
+				"$data_root/www/luci-static/resources/view/echo/"
+			cp "$ROOT/luci-app-echo-config/root/usr/share/luci/menu.d/luci-app-echo-config.json" \
+				"$data_root/usr/share/luci/menu.d/"
+			cp "$ROOT/luci-app-echo-config/root/usr/share/rpcd/acl.d/luci-app-echo-config.json" \
+				"$data_root/usr/share/rpcd/acl.d/"
+			cp "$ROOT/luci-app-echo-config/root/etc/uci-defaults/50_luci-echo-config" \
+				"$data_root/etc/uci-defaults/"
+			;;
+		*)
+			echo "Unknown package: $name" >&2
+			exit 1
+			;;
+	esac
+
+	cat > "$control_dir/control" <<EOF
+Package: $name
+Version: $VERSION-$RELEASE
+Depends: $depends
+Architecture: $ARCH
+Section: luci
+Category: LuCI
+Title: $title
+Description: $title for OpenWrt LuCI
+EOF
+
+	tar -C "$data_root" -czf "$control_dir/data.tar.gz" .
+	if [[ -f "$control_dir/postinst" ]]; then
+		tar -C "$control_dir" -czf "$control_dir/control.tar.gz" control postinst
+	else
+		tar -C "$control_dir" -czf "$control_dir/control.tar.gz" control
+	fi
+	printf '2.0\n' > "$control_dir/debian-binary"
+
+	python3 "$WRITE_AR" "$ipk" \
+		"$control_dir/debian-binary" \
+		"$control_dir/control.tar.gz" \
+		"$control_dir/data.tar.gz"
+
+	# Also ship rootfs tarball for manual install / testing
+	tar -C "$data_root" -czf "${ipk%.ipk}.rootfs.tar.gz" .
+
+	echo "Built: $ipk ($(du -h "$ipk" | cut -f1))"
+}
+
+mkdir -p "$OUT"
+build_ipk "luci-theme-echo" "Echo LuCI Theme" "libc"
+build_ipk "luci-app-echo-config" "Echo Theme Configuration" "luci-theme-echo, luci-base"
+
+echo ""
+echo "Done. Packages in $OUT/"
+ls -lh "$OUT"/*.ipk

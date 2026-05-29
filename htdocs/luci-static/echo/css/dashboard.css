@@ -1,0 +1,327 @@
+/* Echo Theme — Overview tables (dashboard density + Apple clarity) */
+
+.echo-overview {
+	margin-bottom: 28px;
+	animation: echo-dashboard-in 0.35s var(--echo-ease) both;
+}
+
+.echo-overview-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
+}
+
+.echo-panel {
+	margin-bottom: 0 !important;
+}
+
+.echo-panel .cbi-section-head {
+	font-size: var(--echo-text-sm);
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	padding: 12px 16px;
+	background: transparent;
+}
+
+.echo-data-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: var(--echo-text-sm);
+}
+
+.echo-data-table thead th {
+	padding: 10px 16px;
+	text-align: left;
+	font-size: var(--echo-text-xs);
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var(--echo-text-secondary);
+	background: var(--echo-bg);
+	border-bottom: 1px solid var(--echo-border);
+}
+
+.echo-data-table tbody td {
+	padding: 11px 16px;
+	border-bottom: 1px solid var(--echo-border);
+	vertical-align: middle;
+	color: var(--echo-text);
+}
+
+.echo-data-table tbody tr:last-child td {
+	border-bottom: none;
+}
+
+.echo-data-table tbody tr:hover td {
+	background: var(--echo-primary-soft);
+}
+
+.echo-col-narrow {
+	width: 88px;
+	text-align: center !important;
+}
+
+.echo-data-table .echo-mono {
+	font-family: var(--echo-font-mono);
+	font-size: var(--echo-text-xs);
+	letter-spacing: -0.02em;
+}
+
+.echo-dim {
+	color: var(--echo-text-secondary);
+}
+
+.echo-empty,
+.echo-more {
+	text-align: center;
+	color: var(--echo-text-tertiary);
+	font-size: var(--echo-text-xs);
+	padding: 16px !important;
+}
+
+.echo-overview-note {
+	margin: 14px 2px 0;
+	font-size: var(--echo-text-xs);
+	color: var(--echo-text-tertiary);
+}
+
+/* Native LuCI overview below — compact spacing */
+.echo-has-overview #maincontent > .cbi-map:first-of-type,
+.echo-has-overview #maincontent > div > .cbi-map:first-of-type {
+	margin-top: 8px;
+}
+
+.echo-has-overview .cbi-map-descr {
+	font-size: var(--echo-text-xs);
+}
+
+body[data-page="admin-status-overview"] .cbi-section,
+body.echo-has-overview .cbi-section {
+	border-radius: var(--echo-radius-lg);
+}
+
+body[data-page="admin-status-overview"] .echo-table-wrap,
+body.echo-has-overview .echo-table-wrap {
+	border-radius: var(--echo-radius-md);
+	overflow: hidden;
+	box-shadow: var(--echo-shadow-card);
+	margin-bottom: 16px;
+}
+
+.network-status-table .ifacebox-head,
+.echo-widget-box .ifacebox-head {
+	background: var(--echo-bg);
+}
+
+@keyframes echo-dashboard-in {
+	from { opacity: 0; transform: translateY(6px); }
+	to { opacity: 1; transform: none; }
+}
+
+/* ── Network Map ── */
+.echo-map-full {
+	margin-bottom: 0;
+}
+
+.echo-map-body {
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+.echo-map-module {
+	padding: 16px 18px;
+}
+
+.echo-map-module-head {
+	font-size: 10px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	color: var(--echo-text-tertiary);
+	margin-bottom: 12px;
+}
+
+.echo-map-module-inner {
+	min-width: 0;
+}
+
+.echo-map-divider,
+.echo-overview-divider {
+	height: 1px;
+	background: var(--echo-border);
+	margin: 0;
+	flex-shrink: 0;
+}
+
+.echo-overview-divider {
+	margin: 4px 0 20px;
+}
+
+.echo-map-module-ports .echo-map-module-inner,
+.echo-map-module-wifi .echo-map-module-inner {
+	padding: 0;
+}
+
+.echo-map-ports {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+	gap: 10px;
+}
+
+.echo-port {
+	padding: 12px 10px;
+	background: var(--echo-glass-bg-solid, var(--echo-bg-elevated));
+	border: 1px solid var(--echo-border);
+	border-radius: var(--echo-radius-md);
+	text-align: center;
+	min-width: 0;
+}
+
+.echo-port-up {
+	border-color: rgba(52, 199, 89, 0.35);
+}
+
+.echo-port-down {
+	opacity: 0.55;
+}
+
+.echo-port-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 4px;
+	margin-bottom: 6px;
+}
+
+.echo-port-name {
+	font-size: 11px;
+	font-weight: 700;
+	color: var(--echo-text);
+}
+
+.echo-port-role {
+	font-size: 9px;
+	font-weight: 600;
+	color: var(--echo-text-tertiary);
+	text-transform: uppercase;
+}
+
+.echo-port-speed {
+	display: block;
+	font-size: var(--echo-text-lg);
+	font-weight: 700;
+	color: var(--echo-brand-accent);
+	margin-bottom: 6px;
+	font-family: var(--echo-font-mono);
+	line-height: 1.1;
+}
+
+.echo-port .label {
+	font-size: 9px;
+	padding: 2px 6px;
+}
+
+.echo-map-wifi {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+	gap: 10px;
+}
+
+.echo-wifi-card {
+	padding: 12px;
+	background: var(--echo-glass-bg-solid, var(--echo-bg-elevated));
+	border: 1px solid var(--echo-border);
+	border-radius: var(--echo-radius-md);
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.echo-wifi-head {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex-wrap: wrap;
+}
+
+.echo-wifi-badge {
+	font-size: 9px;
+	font-weight: 700;
+	padding: 2px 7px;
+	border-radius: 999px;
+	background: var(--echo-primary-soft);
+	color: var(--echo-brand-accent);
+	white-space: nowrap;
+}
+
+.echo-wifi-badge.wifi7 {
+	background: rgba(0, 181, 226, 0.2);
+}
+
+.echo-wifi-head strong {
+	font-size: 11px;
+}
+
+.echo-wifi-ssid {
+	font-size: 11px;
+	font-weight: 600;
+	color: var(--echo-text);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.echo-wifi-meta {
+	font-size: 10px;
+	color: var(--echo-text-secondary);
+}
+
+.echo-wifi-card .label {
+	align-self: flex-start;
+	font-size: 9px;
+	padding: 2px 6px;
+	margin-top: 2px;
+}
+
+@media (max-width: 1024px) {
+	.echo-overview-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media (max-width: 640px) {
+	.echo-map-module {
+		padding: 14px 12px;
+	}
+
+	.echo-map-ports,
+	.echo-map-wifi {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.echo-data-table thead {
+		display: none;
+	}
+
+	.echo-data-table tbody tr {
+		display: block;
+		padding: 10px 14px;
+		border-bottom: 1px solid var(--echo-border);
+	}
+
+	.echo-data-table tbody td {
+		display: flex;
+		justify-content: space-between;
+		padding: 4px 0;
+		border: none;
+	}
+
+	.echo-data-table tbody td::before {
+		content: attr(data-label);
+		color: var(--echo-text-secondary);
+		font-size: var(--echo-text-xs);
+		margin-right: 12px;
+	}
+}

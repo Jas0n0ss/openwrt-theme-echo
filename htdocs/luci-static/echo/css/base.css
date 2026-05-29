@@ -1,0 +1,60 @@
+/* Echo Theme — Reset & base */
+
+*, *::before, *::after {
+	box-sizing: border-box;
+}
+
+html {
+	font-size: 15px;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: var(--echo-font-sans);
+	font-size: var(--echo-text-base);
+	line-height: 1.55;
+	color: var(--echo-text);
+	background: var(--echo-bg);
+	min-height: 100vh;
+	overflow-x: hidden;
+}
+
+a {
+	color: var(--echo-primary);
+	text-decoration: none;
+	transition: color var(--echo-duration) var(--echo-ease);
+}
+
+a:hover {
+	color: var(--echo-primary-hover);
+}
+
+img, svg {
+	display: block;
+	max-width: 100%;
+}
+
+button, input, select, textarea {
+	font: inherit;
+}
+
+::selection {
+	background: var(--echo-primary-soft);
+	color: var(--echo-text);
+}
+
+.page-leaving #echo-main {
+	opacity: 0.92;
+	transform: translateY(2px);
+	transition: opacity 0.18s var(--echo-ease), transform 0.18s var(--echo-ease);
+}
+
+#echo-app {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}

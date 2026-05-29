@@ -1,0 +1,187 @@
+/* Echo Theme — Login page */
+
+body.echo-login {
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 24px;
+	background: var(--echo-bg);
+	position: relative;
+	overflow: hidden;
+}
+
+body.echo-login::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background:
+		radial-gradient(ellipse 80% 60% at 20% 10%, rgba(0, 113, 227, 0.08), transparent),
+		radial-gradient(ellipse 60% 50% at 80% 90%, rgba(201, 169, 98, 0.06), transparent);
+	pointer-events: none;
+}
+
+.echo-login-card {
+	position: relative;
+	width: 100%;
+	max-width: 400px;
+	background: var(--echo-bg-elevated);
+	border-radius: var(--echo-radius-xl);
+	box-shadow: var(--echo-shadow-lg);
+	border: 1px solid var(--echo-border);
+	padding: 28px 36px 24px;
+	animation: echo-login-in 0.5s var(--echo-ease) both;
+	display: flex;
+	flex-direction: column;
+}
+
+.echo-login-form-area {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	flex: 1;
+}
+
+.echo-login-brand-center,
+.openwrt-login-brand.echo-login-brand-center {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	width: 100%;
+	margin: 0 0 8px;
+	padding: 0 0 20px;
+	border-bottom: 1px solid var(--echo-border);
+}
+
+.openwrt-login-brand .openwrt-login-logo {
+	height: 26px;
+	margin: 0 auto 10px;
+	display: block;
+}
+
+.openwrt-login-brand .router-hostname {
+	font-size: 13px;
+	font-weight: 500;
+	color: var(--echo-text-secondary);
+	margin: 0;
+}
+
+.echo-login-brand-center .echo-login-logo {
+	margin-bottom: 10px;
+}
+
+.echo-login-brand-center .echo-login-hostname {
+	margin: 0;
+}
+
+.echo-login-subtitle {
+	text-align: center;
+	font-size: var(--echo-text-sm);
+	color: var(--echo-text-secondary);
+	margin: 20px 0 16px;
+}
+
+@keyframes echo-login-in {
+	from {
+		opacity: 0;
+		transform: translateY(16px) scale(0.98);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+.echo-login-logo {
+	width: 56px;
+	height: 56px;
+	margin: 0 auto 20px;
+	border-radius: var(--echo-radius-lg);
+	background: var(--echo-bg-sidebar);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: var(--echo-shadow-md);
+}
+
+.echo-login-logo svg {
+	width: 28px;
+	height: 28px;
+	color: var(--echo-brand-gold);
+}
+
+.echo-login-hostname {
+	text-align: center;
+	font-size: var(--echo-text-xl);
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	color: var(--echo-text);
+	margin: 0 0 4px;
+}
+
+.echo-login-form {
+	width: 100%;
+}
+
+.echo-login-form .cbi-value {
+	flex-direction: column;
+	align-items: stretch;
+	padding: 0;
+	border: none;
+	margin-bottom: 16px;
+}
+
+.echo-login-form .cbi-value-title {
+	flex: none;
+	font-size: var(--echo-text-xs);
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--echo-text-tertiary);
+	margin-bottom: 6px;
+}
+
+.echo-login-form .cbi-value-field input {
+	max-width: none;
+	padding: 12px 14px;
+	font-size: var(--echo-text-base);
+}
+
+.echo-login-form .cbi-page-actions {
+	padding: 8px 0 0;
+	background: none;
+	position: static;
+}
+
+.echo-login-form .cbi-button-apply {
+	width: 100%;
+	padding: 12px;
+	font-size: var(--echo-text-base);
+	border-radius: var(--echo-radius-md);
+}
+
+.echo-login-error {
+	padding: 12px 14px;
+	border-radius: var(--echo-radius-sm);
+	background: rgba(255, 59, 48, 0.1);
+	border: 1px solid rgba(255, 59, 48, 0.25);
+	color: var(--echo-danger);
+	font-size: var(--echo-text-sm);
+	margin-bottom: 16px;
+	text-align: center;
+}
+
+.echo-login-footer {
+	text-align: center;
+	margin-top: 24px;
+	font-size: var(--echo-text-xs);
+	color: var(--echo-text-tertiary);
+}
+
+.echo-login-theme-toggle {
+	position: absolute;
+	top: 16px;
+	right: 16px;
+}

@@ -1,0 +1,14 @@
+<% if not blank_page then %>
+    </main>
+    </div>
+    <footer id="echo-footer"><div class="footer-inner"><span>Echo Theme</span><span><%=version.luciname%> (<%=version.luciversion%>)</span></div></footer>
+  </div>
+</div>
+<script>L.require('menu-echo')</script>
+<script>L.require('ui-echo')</script>
+<script>L.require('status-echo')</script>
+<script>L.require('dashboard-echo')</script>
+<% end %>
+<% if js then %><script><%=js%></script><% end %>
+</body>
+</html>

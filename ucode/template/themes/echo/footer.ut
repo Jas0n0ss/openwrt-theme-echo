@@ -1,0 +1,33 @@
+{# luci-theme-echo — Main page footer #}
+{%
+  import { readfile } from 'fs';
+  const echo_version = trim(readfile('/usr/share/ucode/luci/template/themes/echo/version')) ?? '?';
+%}
+{% if (!blank_page): %}
+    </main>
+    </div><!-- #echo-content-wrap -->
+
+    <footer id="echo-footer">
+      <div class="footer-inner">
+        <span>Echo v{{ echo_version }}</span>
+        <span>{{ version.luciname }} ({{ version.luciversion }})</span>
+        <span>{{ version.distname }} {{ version.distversion }} ({{ version.distrevision }})</span>
+        {% if (lua_active): %}
+        <span>{{ _('Lua compatibility mode active') }}</span>
+        {% endif %}
+      </div>
+    </footer>
+  </div>
+</div>
+
+<script>L.require('menu-echo')</script>
+<script>L.require('ui-echo')</script>
+<script>L.require('theme-echo')</script>
+<script>L.require('dashboard-echo')</script>
+<script>
+if (history.scrollRestoration) history.scrollRestoration = 'manual';
+</script>
+{% endif %}
+{% if (js): %}<script>{{ js }}</script>{% endif %}
+</body>
+</html>
