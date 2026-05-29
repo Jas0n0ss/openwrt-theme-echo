@@ -65,6 +65,7 @@ return baseclass.extend({
 		'turboacc': 'proxy.svg',
 		'watchcat': 'status.svg',
 		'clients': 'clients.svg',
+		'logout': 'logout.svg',
 		'_default': 'default.svg'
 	},
 
@@ -288,6 +289,7 @@ return baseclass.extend({
 				'href': L.url('logout'),
 				'title': _('Logout')
 			}, [
+				this.getIcon('logout', _('Logout')),
 				E('span', { 'class': 'nav-label' }, [ _('Logout') ])
 			])
 		]);
