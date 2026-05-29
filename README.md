@@ -1,6 +1,6 @@
 # luci-theme-echo
 
-[![Build IPK](https://github.com/hubo/openwrt-theme-echo/actions/workflows/build.yml/badge.svg)](https://github.com/hubo/openwrt-theme-echo/actions/workflows/build.yml)
+[![Build IPK](https://github.com/Jas0n0ss/openwrt-theme-echo/actions/workflows/build.yml/badge.svg)](https://github.com/Jas0n0ss/openwrt-theme-echo/actions/workflows/build.yml)
 
 Apple 极简美学 × OpenWrt 仪表盘 — 面向 OpenWrt / ImmortalWrt / LEDE 的现代 LuCI 主题。
 
@@ -29,7 +29,7 @@ Apple 极简美学 × OpenWrt 仪表盘 — 面向 OpenWrt / ImmortalWrt / LEDE 
 ## 快速预览
 
 ```bash
-git clone https://github.com/hubo/openwrt-theme-echo.git
+git clone https://github.com/Jas0n0ss/openwrt-theme-echo.git
 cd openwrt-theme-echo
 ./demo/serve.sh
 # 浏览器打开 http://127.0.0.1:8080/demo/
@@ -41,7 +41,7 @@ cd openwrt-theme-echo
 
 ### 方式 A：预编译 .ipk（推荐）
 
-从 [GitHub Actions Artifacts](https://github.com/hubo/openwrt-theme-echo/actions) 下载最新构建，或本地构建：
+从 [GitHub Actions Artifacts](https://github.com/Jas0n0ss/openwrt-theme-echo/actions) 下载最新构建，或本地构建：
 
 ```bash
 ./scripts/build-ipk.sh
@@ -60,7 +60,7 @@ uci commit luci
 
 ```bash
 cd openwrt/package
-git clone https://github.com/hubo/openwrt-theme-echo.git luci-theme-echo
+git clone https://github.com/Jas0n0ss/openwrt-theme-echo.git luci-theme-echo
 cp -r luci-theme-echo/luci-app-echo-config .
 
 make menuconfig
