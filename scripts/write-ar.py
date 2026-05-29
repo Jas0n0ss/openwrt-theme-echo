@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Write/read GNU ar archive (OpenWrt .ipk format)."""
+"""Write and read GNU ar archives (OpenWrt .ipk format)."""
+import io
 import struct
 import sys
 import tarfile
+import time
 from pathlib import Path
 
 
@@ -10,58 +12,60 @@ def pad(n: int) -> int:
     return (n + 1) if n % 2 else n
 
 
+def ar_header(name: str, size: int) -> bytes:
+    name_field = (name if name.endswith("/") else name + "/").encode("ascii")[:16]
+    name_field = name_field.ljust(16, b" ")
+    return b"".join([
+        name_field,
+        str(int(time.time())).encode("ascii").ljust(12)[:12],
+        b"0".ljust(6)[:6],
+        b"0".ljust(6)[:6],
+        b"100644".ljust(8)[:8],
+        str(size).encode("ascii").ljust(10)[:10],
+        b"`\n",
+    ])
+
+
 def write_ar(out_path: Path, members: list[tuple[str, Path]]) -> None:
     with out_path.open("wb") as f:
         f.write(b"!<arch>\n")
         for name, path in members:
             data = path.read_bytes()
-            header = struct.pack(
-                "16s12s6s6s8s10s",
-                name.encode("ascii")[:16],
-                str(len(data)).encode("ascii"),
-                b"0",
-                b"0",
-                b"0",
-                b"0",
-            )
-            f.write(header)
+            f.write(ar_header(name, len(data)))
             f.write(data)
             if len(data) % 2:
                 f.write(b"\n")
 
 
-def read_member(ipk_path: Path, member_name: str) -> bytes:
-    data = ipk_path.read_bytes()
+def read_ar_member(data: bytes, name: str) -> bytes | None:
     if not data.startswith(b"!<arch>\n"):
-        raise ValueError(f"not a GNU ar archive: {ipk_path}")
-
+        return None
     pos = 8
-    header_size = 58
-    while pos + header_size <= len(data):
-        header = data[pos:pos + header_size]
-        name = header[0:16].split(b"\0", 1)[0].decode("ascii")
-        size = int(header[16:28].split(b"\0", 1)[0] or b"0")
-        pos += header_size
-        payload = data[pos:pos + size]
+    while pos + 60 <= len(data):
+        header = data[pos : pos + 60]
+        if header[58:60] != b"`\n":
+            break
+        mname = header[0:16].split(b"/")[0].split(b" ")[0].rstrip(b"\x00")
+        size = int(header[48:58].decode("ascii").strip() or "0")
+        pos += 60
+        payload = data[pos : pos + size]
         pos += pad(size)
-        if name == member_name.rstrip("/"):
+        if mname.decode("ascii", errors="ignore") == name:
             return payload
+    return None
 
-    raise ValueError(f"member not found in {ipk_path}: {member_name}")
 
-
-def extract_ipk(ipk_path: Path, dest: Path) -> None:
-    dest.mkdir(parents=True, exist_ok=True)
-    payload = read_member(ipk_path, "data.tar.gz")
-    tar_path = dest / "data.tar.gz"
-    tar_path.write_bytes(payload)
-    with tarfile.open(tar_path, "r:gz") as tar:
-        tar.extractall(dest)
-    tar_path.unlink()
+def extract_ipk_data(ipk_path: Path, out_dir: Path) -> None:
+    payload = read_ar_member(ipk_path.read_bytes(), "data.tar.gz")
+    if payload is None:
+        raise SystemExit(f"data.tar.gz not found in {ipk_path}")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    with tarfile.open(fileobj=io.BytesIO(payload), mode="r:gz") as tar:
+        tar.extractall(out_dir)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) >= 2 and sys.argv[1] == "--extract":
-        extract_ipk(Path(sys.argv[2]), Path(sys.argv[3]))
-    else:
-        write_ar(Path(sys.argv[1]), [(Path(m).name, Path(m)) for m in sys.argv[2:]])
+    if len(sys.argv) >= 2 and sys.argv[1] == "extract":
+        extract_ipk_data(Path(sys.argv[2]), Path(sys.argv[3]))
+        raise SystemExit(0)
+    write_ar(Path(sys.argv[1]), [(Path(m).name, Path(m)) for m in sys.argv[2:]])

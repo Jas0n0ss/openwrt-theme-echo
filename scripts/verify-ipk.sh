@@ -9,21 +9,15 @@ TMP="$OUT/verify-tmp"
 
 fail() { echo "VERIFY FAIL: $*" >&2; exit 1; }
 
-extract_ipk() {
-	local ipk="$1"
-	local dest="$2"
-
-	rm -rf "$dest"
-	mkdir -p "$dest"
-	python3 "$ROOT/scripts/write-ar.py" --extract "$ipk" "$dest"
-}
-
 check_ipk() {
 	local ipk="$1"
 	local name
-
 	name="$(basename "$ipk" .ipk)"
-	extract_ipk "$ipk" "$TMP"
+	rm -rf "$TMP"
+	mkdir -p "$TMP"
+
+	[[ -f "$ipk" ]] || fail "missing ipk: $ipk"
+	python3 "$ROOT/scripts/write-ar.py" extract "$ipk" "$TMP"
 
 	case "$name" in
 		luci-theme-echo_*)

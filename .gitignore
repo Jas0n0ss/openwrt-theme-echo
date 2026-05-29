@@ -7,3 +7,4 @@ node_modules/
 # Build artifacts (CI generates these)
 dist/
 *.rootfs.tar.gz
+release/
