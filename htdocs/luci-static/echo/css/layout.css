@@ -518,11 +518,6 @@ body.has-content-tabs #content-tabs {
 }
 
 #echo-footer .footer-inner {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	justify-content: center;
-	gap: 8px 12px;
 	text-align: center;
 }
 
@@ -537,12 +532,6 @@ body.has-content-tabs #content-tabs {
 .footer-link:hover {
 	color: var(--echo-primary-hover, var(--echo-primary));
 	text-decoration: underline;
-}
-
-.footer-sep {
-	color: var(--echo-text-tertiary);
-	font-size: 12px;
-	user-select: none;
 }
 
 @media (max-width: 960px) {
