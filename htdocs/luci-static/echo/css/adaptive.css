@@ -132,7 +132,7 @@
 /* Ensure app-injected modals sit above top navigation */
 .modal.cbi-modal,
 .modal.echo-modal {
-	z-index: 1100;
+	z-index: 5000;
 }
 
 .nav-top .nav-icon-letter,

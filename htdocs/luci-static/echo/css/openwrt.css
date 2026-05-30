@@ -47,16 +47,17 @@ body.theme-openwrt .nav-top {
 	font-weight: 400;
 }
 
-body.theme-openwrt .nav-section.is-active .nav-top,
-body.theme-openwrt .nav-top.active {
-	background: var(--echo-nav-active-bg);
-	color: var(--echo-nav-active-text);
-	font-weight: 600;
-}
-
-body.theme-openwrt .nav-top:hover:not(.active) {
+body.theme-openwrt .nav-top:hover,
+body.theme-openwrt .nav-top:focus-visible {
 	background: var(--echo-nav-active-bg);
 	color: var(--echo-nav-text-hover);
+}
+
+body.theme-openwrt .nav-section.is-active .nav-top:not(:hover):not(:focus-visible),
+body.theme-openwrt .nav-top.active:not(:hover):not(:focus-visible) {
+	background: transparent;
+	color: var(--echo-nav-text);
+	font-weight: 400;
 }
 
 body.theme-openwrt .nav-dropdown-item.active {

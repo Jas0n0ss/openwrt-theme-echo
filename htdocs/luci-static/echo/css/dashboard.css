@@ -3,6 +3,8 @@
 .echo-overview {
 	margin-bottom: 28px;
 	animation: echo-dashboard-in 0.35s var(--echo-ease) both;
+	position: relative;
+	z-index: 0;
 }
 
 .echo-overview-grid {
